@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Lock, Unlock } from "lucide-react";
 import vaultClosedImg from "@/assets/images/vault_closed_hd.png";
 import vaultOpenImg from "@/assets/images/vault_open_hd.png";
 
@@ -214,9 +215,13 @@ export function InteractiveVault({
         {/* Click to open / close hint button */}
         <button
           onClick={handleClick}
-          className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-0.5 bg-[#121212] border border-[#2a2a2a] hover:border-[#E50914] text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs"
+          className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-1 bg-[#121212] border border-[#2a2a2a] hover:border-[#E50914] text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs"
         >
-          <span style={{ color: accentColor }}>{isOpen ? "🔒" : "🔓"}</span>
+          {isOpen ? (
+            <Lock className="w-3 h-3 text-[#E50914]" />
+          ) : (
+            <Unlock className="w-3 h-3" style={{ color: accentColor }} />
+          )}
           <span>{isOpen ? "SEAL VAULT" : "CLICK TO UNLOCK"}</span>
         </button>
       </div>

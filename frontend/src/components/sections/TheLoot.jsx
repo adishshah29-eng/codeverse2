@@ -78,14 +78,6 @@ export function TheLoot() {
     }
   };
 
-  const handleCloseAll = () => {
-    setActiveVault(null);
-  };
-
-  const handleReplayRain = () => {
-    setIsMoneyRaining(true);
-  };
-
   return (
     <section
       id="loot"
@@ -151,72 +143,13 @@ export function TheLoot() {
           </div>
 
           {/* Right Total Prize Pool Callout Box */}
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="p-5 sm:p-6 bg-[#111111]/90 border border-[#262626] backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] min-w-[220px]">
-              <span className="font-mono text-[10px] tracking-[0.25em] text-[#A3A3A3] uppercase block mb-1">
-                TOTAL PRINTED RESERVE
-              </span>
-              <span className="font-heist text-4xl sm:text-5xl text-[#C9A227] tracking-wider block drop-shadow-[0_0_20px_rgba(201,162,39,0.35)]">
-                ₹50,000
-              </span>
-            </div>
-
-            {/* Quick Action Toggle Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 self-start md:self-end">
-              <div className="flex items-center gap-1 bg-[#121212] p-1 border border-[#262626]">
-                <button
-                  onClick={() => handleVaultClick("02")}
-                  className={`px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase transition-all cursor-pointer rounded-xs ${
-                    activeVault === "02"
-                      ? "bg-[#E50914] text-white font-bold shadow-[0_0_10px_rgba(229,9,20,0.5)]"
-                      : "text-neutral-400 hover:text-white"
-                  }`}
-                  title="Open Vault 02 (2nd Prize)"
-                >
-                  02 · 2ND
-                </button>
-                <button
-                  onClick={() => handleVaultClick("01")}
-                  className={`px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase transition-all cursor-pointer rounded-xs ${
-                    activeVault === "01"
-                      ? "bg-[#C9A227] text-black font-extrabold shadow-[0_0_15px_rgba(201,162,39,0.6)]"
-                      : "text-neutral-400 hover:text-white"
-                  }`}
-                  title="Open Vault 01 (1st Prize)"
-                >
-                  01 · 1ST
-                </button>
-                <button
-                  onClick={() => handleVaultClick("03")}
-                  className={`px-2.5 py-1 text-[10px] font-mono tracking-widest uppercase transition-all cursor-pointer rounded-xs ${
-                    activeVault === "03"
-                      ? "bg-neutral-300 text-black font-bold shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                      : "text-neutral-400 hover:text-white"
-                  }`}
-                  title="Open Vault 03 (3rd Prize)"
-                >
-                  03 · 3RD
-                </button>
-              </div>
-
-              {activeVault && (
-                <button
-                  onClick={handleCloseAll}
-                  className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-[#E50914] text-[10px] font-mono tracking-widest uppercase text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs"
-                  title="Seal active vault"
-                >
-                  🔒 SEAL
-                </button>
-              )}
-
-              <button
-                onClick={handleReplayRain}
-                className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-[#E50914] text-[10px] font-mono tracking-widest uppercase text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs flex items-center justify-center gap-1"
-                title="Trigger money rain"
-              >
-                <span className="text-[#E50914]">↻</span> RAIN
-              </button>
-            </div>
+          <div className="p-5 sm:p-6 bg-[#111111]/90 border border-[#262626] backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] min-w-[220px]">
+            <span className="font-mono text-[10px] tracking-[0.25em] text-[#A3A3A3] uppercase block mb-1">
+              TOTAL PRINTED RESERVE
+            </span>
+            <span className="font-heist text-4xl sm:text-5xl text-[#C9A227] tracking-wider block drop-shadow-[0_0_20px_rgba(201,162,39,0.35)]">
+              ₹25,000
+            </span>
           </div>
         </div>
 
@@ -230,7 +163,7 @@ export function TheLoot() {
             <InteractiveVault
               rank="02"
               title="2ND PRIZE"
-              amount="₹15,000"
+              amount="₹8,000"
               perk="+ RUNNER-UP TROPHY"
               targetLabel="SECONDARY TARGET"
               statusLabel="SECURED VAULT 02"
@@ -247,7 +180,7 @@ export function TheLoot() {
             <InteractiveVault
               rank="01"
               title="1ST PRIZE"
-              amount="₹25,000"
+              amount="₹12,000"
               perk="+ THE WINNER’S TROPHY"
               targetLabel="PRIMARY TARGET"
               statusLabel="SECURED VAULT 01"
@@ -264,7 +197,7 @@ export function TheLoot() {
             <InteractiveVault
               rank="03"
               title="3RD PRIZE"
-              amount="₹10,000"
+              amount="₹5,000"
               perk="+ THIRD PLACE TROPHY"
               targetLabel="TERTIARY TARGET"
               statusLabel="SECURED VAULT 03"

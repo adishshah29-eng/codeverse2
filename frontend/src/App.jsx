@@ -9,10 +9,14 @@ import ProfessorsRules from "@/components/sections/ProfessorsRules";
 import TheMint from "@/components/sections/TheMint";
 import FinalCta from "@/components/sections/FinalCta";
 import Footer from "@/components/sections/Footer";
+import GlobalBackgroundAudio from "@/components/cinematic/GlobalBackgroundAudio";
 
 function App() {
   return (
     <main className="w-full bg-[#080808] text-[#F5F2ED] selection:bg-[#E50914] selection:text-white">
+      {/* Global Background Audio Controller - Persistent in left corner */}
+      <GlobalBackgroundAudio />
+
       {/* Existing Landing Page - Preserved */}
       <CinematicIntro />
 
