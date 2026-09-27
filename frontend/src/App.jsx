@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button"
+import CinematicIntro from "@/components/cinematic/CinematicIntro";
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
-    </div>
-  )
+    <main className="w-full min-h-screen bg-black text-[#f3f4f6] selection:bg-red-900 selection:text-white">
+      <CinematicIntro />
+    </main>
+  );
 }
 
-export default App
+export default App;
