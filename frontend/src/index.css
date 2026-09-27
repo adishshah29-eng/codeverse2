@@ -192,4 +192,56 @@
 .font-heist {
   font-family: 'Black Ops One', sans-serif !important;
 }
+
+/* Schedule Hanging Money Subtle Sway Animation */
+@keyframes hangingSway {
+  0% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+  22% {
+    transform: rotate(1.1deg) translate3d(2px, 3px, 0);
+  }
+  48% {
+    transform: rotate(-0.85deg) translate3d(-2px, 6px, 0);
+  }
+  72% {
+    transform: rotate(1.25deg) translate3d(2.5px, 4px, 0);
+  }
+  86% {
+    transform: rotate(-0.4deg) translate3d(-1px, 2px, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes threadPulse {
+  0%, 100% {
+    opacity: 0.65;
+    filter: drop-shadow(0 0 1px rgba(229, 9, 20, 0.4));
+  }
+  50% {
+    opacity: 0.95;
+    filter: drop-shadow(0 0 3px rgba(229, 9, 20, 0.8));
+  }
+}
+
+.animate-hanging-sway {
+  transform-origin: 50% 0%;
+  animation: hangingSway 9.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-thread-glow {
+  animation: threadPulse 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hanging-sway {
+    animation: none !important;
+  }
+  .animate-thread-glow {
+    animation: none !important;
+  }
+}
 
