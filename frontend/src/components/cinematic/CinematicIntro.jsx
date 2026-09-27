@@ -8,12 +8,15 @@ import moneyHeistVideo from "@/assets/videos/moneyheistvd.mp4";
 
 export function CinematicIntro() {
   const [smoothProgress, setSmoothProgress] = useState(0);
+  const [isIntroCompleted, setIsIntroCompleted] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const { isMuted, toggleMute } = useSharedTypewriterAudio();
 
   const videoRef = useRef(null);
   const targetProgress = useRef(0);
+  const maxProgress = useRef(0);
   const rafId = useRef(null);
+  const completedRef = useRef(false);
 
   // Check prefers-reduced-motion
   useEffect(() => {
@@ -26,6 +29,20 @@ export function CinematicIntro() {
 
   // Multi-input scroll & silky progress controller
   useEffect(() => {
+    if (isIntroCompleted) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      window.scrollTo(0, 0);
+      return () => {
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+      };
+    }
+
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
     const getScrollRatio = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight <= 0) return 0;
@@ -34,7 +51,13 @@ export function CinematicIntro() {
     };
 
     const handleScroll = () => {
-      targetProgress.current = getScrollRatio();
+      if (completedRef.current) return;
+      const ratio = getScrollRatio();
+      // Ensure forward-only progress: cannot scroll back into previous chat
+      if (ratio > maxProgress.current) {
+        maxProgress.current = ratio;
+      }
+      targetProgress.current = maxProgress.current;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -43,24 +66,33 @@ export function CinematicIntro() {
     // Silky smooth dampening lerp
     let current = 0;
     const lerpLoop = () => {
+      if (completedRef.current) return;
       // 0.075 lerp speed creates fluid, cinematic inertia without lag
       current += (targetProgress.current - current) * 0.075;
       if (Math.abs(targetProgress.current - current) < 0.0003) {
         current = targetProgress.current;
       }
       setSmoothProgress(current);
+
+      // Once we reach the final video landing page, complete the intro permanently until reload
+      if (current >= 0.90 && !completedRef.current) {
+        completedRef.current = true;
+        setSmoothProgress(1);
+        setIsIntroCompleted(true);
+        return;
+      }
+
       rafId.current = requestAnimationFrame(lerpLoop);
     };
     rafId.current = requestAnimationFrame(lerpLoop);
 
-    // Keyboard support for presentation/accessibility
+    // Keyboard support: forward scroll only, prevent scrolling backwards into previous chat
     const handleKeyDown = (e) => {
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
         e.preventDefault();
         window.scrollBy({ top: window.innerHeight * 0.65, behavior: "smooth" });
       } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        e.preventDefault();
-        window.scrollBy({ top: -window.innerHeight * 0.65, behavior: "smooth" });
+        e.preventDefault(); // Prevent scrolling back into previous chat
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -70,14 +102,31 @@ export function CinematicIntro() {
       window.removeEventListener("keydown", handleKeyDown);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, []);
+  }, [isIntroCompleted]);
+
+  // Lock wheel & touch gestures when intro has completed to prevent reverse scrolling
+  useEffect(() => {
+    if (!isIntroCompleted) return;
+
+    const preventScroll = (e) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener("wheel", preventScroll, { passive: false });
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+    };
+  }, [isIntroCompleted]);
 
   // Video playback management for Scene 4
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (smoothProgress >= 0.86) {
+    if (smoothProgress >= 0.86 || isIntroCompleted) {
       if (video.paused && !video.ended) {
         video.play().catch(() => {
           video.muted = true;
@@ -89,15 +138,15 @@ export function CinematicIntro() {
         video.pause();
       }
     }
-  }, [smoothProgress]);
+  }, [smoothProgress, isIntroCompleted]);
 
   // Scene timings
   // Scene 1: Professor & Subtitles (Active from start 0.00 to 0.22)
-  const isScene1Active = smoothProgress < 0.22;
+  const isScene1Active = !isIntroCompleted && smoothProgress < 0.22;
   const scene1Opacity = smoothProgress < 0.18 ? 1 : Math.max(0, 1 - (smoothProgress - 0.18) / 0.035);
 
   // Scene 2: Three Crew Members & Subtitles (0.44 to 0.65)
-  const isScene2Active = smoothProgress >= 0.42 && smoothProgress < 0.65;
+  const isScene2Active = !isIntroCompleted && smoothProgress >= 0.42 && smoothProgress < 0.65;
   const scene2Opacity =
     smoothProgress < 0.42
       ? 0
@@ -106,7 +155,7 @@ export function CinematicIntro() {
         : Math.max(0, 1 - (smoothProgress - 0.60) / 0.04);
 
   // Scene 3: Pure Black (0.75 to 0.86)
-  const isScene3Active = smoothProgress >= 0.74 && smoothProgress < 0.86;
+  const isScene3Active = !isIntroCompleted && smoothProgress >= 0.74 && smoothProgress < 0.86;
   const scene3Opacity =
     smoothProgress < 0.74
       ? 0
@@ -115,20 +164,21 @@ export function CinematicIntro() {
         : Math.max(0, 1 - (smoothProgress - 0.84) / 0.02);
 
   // Scene 4: Video Reveal (0.86 to 1.00)
-  const isScene4Active = smoothProgress >= 0.86;
-  const videoOpacity =
-    smoothProgress < 0.86
+  const isScene4Active = isIntroCompleted || smoothProgress >= 0.86;
+  const videoOpacity = isIntroCompleted
+    ? 1
+    : smoothProgress < 0.86
       ? 0
       : Math.min(1, (smoothProgress - 0.86) / 0.03);
 
+  // Navbar is ONLY visible when the video is revealed or intro completed
+  const isNavbarVisible = isIntroCompleted || smoothProgress >= 0.86;
 
-  // Navbar is ONLY visible when the video is revealed (Scene 4: smoothProgress >= 0.86)
-  const isNavbarVisible = smoothProgress >= 0.86;
-
-  // Big Glitch Title: ONLY visible when the video is revealed (Scene 4: smoothProgress >= 0.86) in the middle over the video
-  const isVideoTitleActive = smoothProgress >= 0.86;
-  const videoTitleOpacity =
-    smoothProgress < 0.86
+  // Big Glitch Title: ONLY visible when the video is revealed or intro completed
+  const isVideoTitleActive = isIntroCompleted || smoothProgress >= 0.86;
+  const videoTitleOpacity = isIntroCompleted
+    ? 1
+    : smoothProgress < 0.86
       ? 0
       : Math.min(1, (smoothProgress - 0.86) / 0.04);
 
@@ -143,11 +193,19 @@ export function CinematicIntro() {
 
   return (
     <div className="relative w-full bg-black text-[#f3f4f6]">
-      {/* Top Glassmorphism Navigation: THE BRIEFING, THE PLAN, THE LOOT (hidden at start, appears on scroll) */}
+      {/* Top Glassmorphism Navigation: THE BRIEFING, THE PLAN, THE LOOT */}
       <CinematicNavbar
-        progress={smoothProgress}
+        progress={isIntroCompleted ? 1 : smoothProgress}
         visible={isNavbarVisible}
+        isIntroCompleted={isIntroCompleted}
         onNavigate={(ratio) => {
+          if (isIntroCompleted) return;
+          if (ratio >= 0.85) {
+            completedRef.current = true;
+            setSmoothProgress(1);
+            setIsIntroCompleted(true);
+            return;
+          }
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           if (docHeight > 0) {
             window.scrollTo({ top: ratio * docHeight, behavior: "smooth" });
@@ -155,119 +213,127 @@ export function CinematicIntro() {
         }}
       />
 
-      {/* Real Scroll Track: 550vh ensures ample scroll control */}
-      <div style={{ height: "550vh" }} className="relative pointer-events-none" aria-hidden="true">
-        <div id="narrative-trigger-scene-1" className="absolute top-[20vh] h-[50vh] w-full" />
-        <div id="narrative-trigger-scene-2" className="absolute top-[210vh] h-[60vh] w-full" />
-        <div id="narrative-trigger-scene-3" className="absolute top-[380vh] h-[60vh] w-full" />
-      </div>
+      {/* Real Scroll Track: only rendered during the prologue before reaching this page */}
+      {!isIntroCompleted && (
+        <div style={{ height: "550vh" }} className="relative pointer-events-none" aria-hidden="true">
+          <div id="narrative-trigger-scene-1" className="absolute top-[20vh] h-[50vh] w-full" />
+          <div id="narrative-trigger-scene-2" className="absolute top-[210vh] h-[60vh] w-full" />
+          <div id="narrative-trigger-scene-3" className="absolute top-[380vh] h-[60vh] w-full" />
+        </div>
+      )}
 
       {/* Pinned Fixed Cinematic Viewport */}
       <div className="fixed inset-0 w-full h-full overflow-hidden bg-black flex items-center justify-center select-none pt-14 md:pt-16">
 
-        {/* Layer 1: Pixel Canvas */}
-        <PixelCanvas
-          progress={smoothProgress}
-          reducedMotion={reducedMotion}
-        />
+        {/* Layer 1: Pixel Canvas (unmounted when completed to eliminate previous chat and save performance) */}
+        {!isIntroCompleted && (
+          <PixelCanvas
+            progress={smoothProgress}
+            reducedMotion={reducedMotion}
+          />
+        )}
 
         {/* Layer 2: Subtle Film Vignette Overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 80%, rgba(0,0,0,0.98) 100%)",
-          }}
-        />
+        {!isIntroCompleted && (
+          <div
+            className="absolute inset-0 pointer-events-none z-10"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 80%, rgba(0,0,0,0.98) 100%)",
+            }}
+          />
+        )}
 
-
-
-        {/* Layer 3: Narrative Subtitles */}
-
-        {/* SCENE 1 SUBTITLES (The Professor) */}
-        <div
-          className={`absolute bottom-12 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
-            isScene1Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
-          }`}
-          style={{ opacity: isScene1Active ? scene1Opacity : 0 }}
-        >
-          {/* Small mute toggle for the narrative sequence near the first story block */}
-          <div className="flex justify-center mb-3">
-            <button
-              type="button"
-              onClick={toggleMute}
-              className="pointer-events-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono bg-black/60 border border-neutral-700/60 text-neutral-400 hover:text-white hover:border-neutral-500 transition-all backdrop-blur-sm select-none"
-              aria-label={isMuted ? "Unmute narrative typewriter audio" : "Mute narrative typewriter audio"}
+        {/* Layer 3: Narrative Subtitles (removed permanently once reaching this page) */}
+        {!isIntroCompleted && (
+          <>
+            {/* SCENE 1 SUBTITLES (The Professor) */}
+            <div
+              className={`absolute bottom-12 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
+                isScene1Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+              }`}
+              style={{ opacity: isScene1Active ? scene1Opacity : 0 }}
             >
-              <span>{isMuted ? "🔇" : "🔊"}</span>
-              <span className="text-[10px] tracking-wider uppercase">{isMuted ? "Audio Muted" : "Typewriter Sound"}</span>
-            </button>
-          </div>
+              {/* Small mute toggle for the narrative sequence near the first story block */}
+              <div className="flex justify-center mb-3">
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  className="pointer-events-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono bg-black/60 border border-neutral-700/60 text-neutral-400 hover:text-white hover:border-neutral-500 transition-all backdrop-blur-sm select-none"
+                  aria-label={isMuted ? "Unmute narrative typewriter audio" : "Mute narrative typewriter audio"}
+                >
+                  <span>{isMuted ? "🔇" : "🔊"}</span>
+                  <span className="text-[10px] tracking-wider uppercase">{isMuted ? "Audio Muted" : "Typewriter Sound"}</span>
+                </button>
+              </div>
 
-          <div className="text-sm sm:text-base md:text-lg text-neutral-300 font-light tracking-wide space-y-3">
-            <ScrollTypewriterBlock
-              triggerId="narrative-trigger-scene-1"
-              isActive={isScene1Active && smoothProgress > 0.02}
-              lines={[
-                "It’s been five months since he found you.",
-                "No names. No pasts. Just a knock on the door… and a man who called himself The Professor.",
-              ]}
-              wordDelay={150}
-              linePause={500}
-              className="text-neutral-200"
-              lineClassName="text-neutral-200"
-              cursorClassName="bg-red-600"
-            />
-          </div>
-        </div>
+              <div className="text-sm sm:text-base md:text-lg text-neutral-300 font-light tracking-wide space-y-3">
+                <ScrollTypewriterBlock
+                  triggerId="narrative-trigger-scene-1"
+                  isActive={isScene1Active && smoothProgress > 0.02}
+                  lines={[
+                    "It’s been five months since he found you.",
+                    "No names. No pasts. Just a knock on the door… and a man who called himself The Professor.",
+                  ]}
+                  wordDelay={150}
+                  linePause={500}
+                  className="text-neutral-200"
+                  lineClassName="text-neutral-200"
+                  cursorClassName="bg-red-600"
+                />
+              </div>
+            </div>
 
-        {/* SCENE 2 SUBTITLES (Three Crew Members) */}
-        <div
-          className={`absolute bottom-12 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
-            isScene2Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
-          }`}
-          style={{ opacity: isScene2Active ? scene2Opacity : 0 }}
-        >
-          <div className="text-sm sm:text-base md:text-lg text-neutral-300 font-light tracking-wide space-y-3">
-            <ScrollTypewriterBlock
-              triggerId="narrative-trigger-scene-2"
-              isActive={isScene2Active}
-              lines={[
-                "He’d been watching. Waiting. Planning.",
-                "Today, the training ends.",
-              ]}
-              wordDelay={150}
-              linePause={500}
-              className="text-neutral-200"
-              lineClassName="text-neutral-200"
-              cursorClassName="bg-red-600"
-            />
-          </div>
-        </div>
+            {/* SCENE 2 SUBTITLES (Three Crew Members) */}
+            <div
+              className={`absolute bottom-12 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
+                isScene2Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+              }`}
+              style={{ opacity: isScene2Active ? scene2Opacity : 0 }}
+            >
+              <div className="text-sm sm:text-base md:text-lg text-neutral-300 font-light tracking-wide space-y-3">
+                <ScrollTypewriterBlock
+                  triggerId="narrative-trigger-scene-2"
+                  isActive={isScene2Active}
+                  lines={[
+                    "He’d been watching. Waiting. Planning.",
+                    "Today, the training ends.",
+                  ]}
+                  wordDelay={150}
+                  linePause={500}
+                  className="text-neutral-200"
+                  lineClassName="text-neutral-200"
+                  cursorClassName="bg-red-600"
+                />
+              </div>
+            </div>
 
-        {/* SCENE 3 SUBTITLES (Pure Black Void - No navbar, no logo) */}
-        <div
-          className={`absolute inset-0 z-20 flex items-center justify-center px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
-            isScene3Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
-          }`}
-          style={{ opacity: isScene3Active ? scene3Opacity : 0 }}
-        >
-          <div className="text-2xl sm:text-3xl md:text-4xl text-neutral-200 font-normal tracking-widest">
-            <ScrollTypewriterBlock
-              triggerId="narrative-trigger-scene-3"
-              isActive={isScene3Active}
-              lines={["Today… you go in."]}
-              wordDelay={160}
-              className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]"
-              cursorClassName="bg-white"
-            />
-          </div>
-        </div>
+            {/* SCENE 3 SUBTITLES (Pure Black Void) */}
+            <div
+              className={`absolute inset-0 z-20 flex items-center justify-center px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
+                isScene3Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
+              }`}
+              style={{ opacity: isScene3Active ? scene3Opacity : 0 }}
+            >
+              <div className="text-2xl sm:text-3xl md:text-4xl text-neutral-200 font-normal tracking-widest">
+                <ScrollTypewriterBlock
+                  triggerId="narrative-trigger-scene-3"
+                  isActive={isScene3Active}
+                  lines={["Today… you go in."]}
+                  wordDelay={160}
+                  className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.25)]"
+                  cursorClassName="bg-white"
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         {/* SCENE 4: FINAL VIDEO REVEAL - FIT TO LENGTH */}
         <div
-          className={`absolute inset-0 z-30 flex items-center justify-center bg-black transition-opacity duration-1000 ease-in-out ${isScene4Active ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-            }`}
+          className={`absolute inset-0 z-30 flex items-center justify-center bg-black transition-opacity duration-1000 ease-in-out ${
+            isScene4Active ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
           style={{
             opacity: videoOpacity,
             visibility: videoOpacity > 0 ? "visible" : "hidden",
@@ -280,6 +346,8 @@ export function CinematicIntro() {
               className="w-full h-full min-h-screen object-cover"
               playsInline
               muted
+              autoPlay
+              loop
               preload="auto"
               src={moneyHeistVideo}
               style={{
@@ -308,7 +376,7 @@ export function CinematicIntro() {
               className={`absolute top-16 sm:top-20 md:top-24 lg:top-28 left-0 right-0 z-30 px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
                 isVideoTitleActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
               }`}
-              style={{ opacity: isVideoTitleActive ? videoTitleOpacity : 0 }}
+              style={{ opacity: videoTitleOpacity }}
             >
               <div className="inline-block pointer-events-auto">
                 <GlitchText
@@ -325,8 +393,8 @@ export function CinematicIntro() {
           </div>
         </div>
 
-        {/* Subtle cinematic scroll indicator & jump hint */}
-        {smoothProgress < 0.85 && (
+        {/* Subtle cinematic scroll indicator & jump hint (only during intro) */}
+        {!isIntroCompleted && smoothProgress < 0.85 && (
           <div
             className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 transition-opacity duration-500 text-center cursor-pointer group"
             onClick={scrollToNext}

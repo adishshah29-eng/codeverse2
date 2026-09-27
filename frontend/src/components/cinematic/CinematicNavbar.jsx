@@ -9,8 +9,11 @@ import React from "react";
  * - Interactive smooth scrolling to corresponding story scenes
  * - Active state tracking based on scroll progress
  */
-export function CinematicNavbar({ progress = 0, onNavigate, visible }) {
+export function CinematicNavbar({ progress = 0, onNavigate, visible, isIntroCompleted = false }) {
   const scrollToScene = (ratio) => {
+    if (isIntroCompleted) {
+      return;
+    }
     if (onNavigate) {
       onNavigate(ratio);
       return;
@@ -21,12 +24,13 @@ export function CinematicNavbar({ progress = 0, onNavigate, visible }) {
     }
   };
 
-  const isNavbarVisible = visible !== undefined ? visible : progress >= 0.86;
+  const isNavbarVisible = isIntroCompleted ? true : (visible !== undefined ? visible : progress >= 0.86);
 
   // Active section calculation
-  const isBriefingActive = progress < 0.35;
-  const isPlanActive = progress >= 0.35 && progress < 0.75;
-  const isLootActive = progress >= 0.75;
+  const isBriefingActive = !isIntroCompleted && progress < 0.35;
+  const isPlanActive = !isIntroCompleted && progress >= 0.35 && progress < 0.75;
+  const isLootActive = isIntroCompleted || progress >= 0.75;
+
 
   return (
     <nav
