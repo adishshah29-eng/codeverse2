@@ -1,5 +1,4 @@
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
  * BlurText - Animates words or sentences from blurred/offset state into crisp focus.
@@ -15,54 +14,45 @@ export function BlurText({
   as: Component = 'span',
 }) {
   const words = text ? text.split(' ') : [];
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: stagger,
-        delayChildren: delay,
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
       },
-    },
-  };
-
-  const wordVariants = {
-    hidden: {
-      opacity: 0,
-      filter: 'blur(10px)',
-      y: 12,
-    },
-    visible: {
-      opacity: 1,
-      filter: 'blur(0px)',
-      y: 0,
-      transition: {
-        duration,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <Component className={`inline-block ${className}`}>
-      <motion.span
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
-        className="inline-block"
-      >
+    <Component ref={ref} className={`inline-block ${className}`}>
+      <span className="inline-block">
         {words.map((word, i) => (
-          <motion.span
+          <span
             key={i}
-            variants={wordVariants}
-            className={`inline-block mr-[0.28em] ${wordClassName}`}
+            className={`inline-block mr-[0.28em] transition-all ${wordClassName}`}
+            style={{
+              opacity: inView ? 1 : 0,
+              filter: inView ? 'blur(0px)' : 'blur(10px)',
+              transform: inView ? 'translateY(0)' : 'translateY(12px)',
+              transitionDuration: `${duration}s`,
+              transitionDelay: `${delay + i * stagger}s`,
+              transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
           >
             {word}
-          </motion.span>
+          </span>
         ))}
-      </motion.span>
+      </span>
     </Component>
   );
 }
@@ -78,29 +68,42 @@ export function BlurFade({
   yOffset = 16,
   blur = '8px',
 }) {
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        filter: `blur(${blur})`,
-        y: yOffset,
+    <div
+      ref={ref}
+      className={`transition-all ${className}`}
+      style={{
+        opacity: inView ? 1 : 0,
+        filter: inView ? 'blur(0px)' : `blur(${blur})`,
+        transform: inView ? 'translateY(0)' : `translateY(${yOffset}px)`,
+        transitionDuration: `${duration}s`,
+        transitionDelay: `${delay}s`,
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
       }}
-      whileInView={{
-        opacity: 1,
-        filter: 'blur(0px)',
-        y: 0,
-      }}
-      viewport={{ once: true, amount: 0.1 }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className={className}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
 export default BlurText;
+

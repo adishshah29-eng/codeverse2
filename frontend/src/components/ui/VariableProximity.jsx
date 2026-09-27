@@ -1,5 +1,4 @@
 import { forwardRef, useMemo, useRef, useEffect, useImperativeHandle } from 'react';
-import { motion } from 'motion/react';
 
 function useAnimationFrame(callback) {
   useEffect(() => {
@@ -168,7 +167,7 @@ const VariableProximity = forwardRef((props, ref) => {
           {word.split('').map(letter => {
             const currentLetterIndex = letterIndex++;
             return (
-              <motion.span
+              <span
                 key={currentLetterIndex}
                 ref={el => {
                   letterRefs.current[currentLetterIndex] = el;
@@ -180,7 +179,7 @@ const VariableProximity = forwardRef((props, ref) => {
                 aria-hidden="true"
               >
                 {letter}
-              </motion.span>
+              </span>
             );
           })}
           {wordIndex < words.length - 1 && <span className="inline-block">&nbsp;</span>}
