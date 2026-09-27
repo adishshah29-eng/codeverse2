@@ -27,33 +27,22 @@ export function CinematicIntro() {
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
-  // Multi-input scroll & silky progress controller
+  // Multi-input scroll & silky progress controller calibrated to the intro hero track
   useEffect(() => {
-    if (isIntroCompleted) {
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-      window.scrollTo(0, 0);
-      return () => {
-        document.documentElement.style.overflow = "";
-        document.body.style.overflow = "";
-      };
-    }
-
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
 
     const getScrollRatio = () => {
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight <= 0) return 0;
+      // 4.5 * innerHeight corresponds to the 550vh track pinning duration
+      const trackHeight = window.innerHeight * 4.5;
+      if (trackHeight <= 0) return 0;
       const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-      return Math.max(0, Math.min(1, scrollY / docHeight));
+      return Math.max(0, Math.min(1, scrollY / trackHeight));
     };
 
     const handleScroll = () => {
-      if (completedRef.current) return;
       const ratio = getScrollRatio();
-      // Ensure forward-only progress: cannot scroll back into previous chat
       if (ratio > maxProgress.current) {
         maxProgress.current = ratio;
       }
@@ -66,33 +55,30 @@ export function CinematicIntro() {
     // Silky smooth dampening lerp
     let current = 0;
     const lerpLoop = () => {
-      if (completedRef.current) return;
-      // 0.075 lerp speed creates fluid, cinematic inertia without lag
       current += (targetProgress.current - current) * 0.075;
       if (Math.abs(targetProgress.current - current) < 0.0003) {
         current = targetProgress.current;
       }
       setSmoothProgress(current);
 
-      // Once we reach the final video landing page, complete the intro permanently until reload
       if (current >= 0.90 && !completedRef.current) {
         completedRef.current = true;
-        setSmoothProgress(1);
         setIsIntroCompleted(true);
-        return;
       }
 
       rafId.current = requestAnimationFrame(lerpLoop);
     };
     rafId.current = requestAnimationFrame(lerpLoop);
 
-    // Keyboard support: forward scroll only, prevent scrolling backwards into previous chat
+    // Keyboard support: smooth arrow navigation
     const handleKeyDown = (e) => {
-      if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
-        e.preventDefault();
-        window.scrollBy({ top: window.innerHeight * 0.65, behavior: "smooth" });
-      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        e.preventDefault(); // Prevent scrolling back into previous chat
+      if (window.scrollY < window.innerHeight * 4.5) {
+        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
+          e.preventDefault();
+          window.scrollBy({ top: window.innerHeight * 0.65, behavior: "smooth" });
+        } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+          e.preventDefault();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -102,24 +88,7 @@ export function CinematicIntro() {
       window.removeEventListener("keydown", handleKeyDown);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [isIntroCompleted]);
-
-  // Lock wheel & touch gestures when intro has completed to prevent reverse scrolling
-  useEffect(() => {
-    if (!isIntroCompleted) return;
-
-    const preventScroll = (e) => {
-      e.preventDefault();
-    };
-
-    window.addEventListener("wheel", preventScroll, { passive: false });
-    window.addEventListener("touchmove", preventScroll, { passive: false });
-
-    return () => {
-      window.removeEventListener("wheel", preventScroll);
-      window.removeEventListener("touchmove", preventScroll);
-    };
-  }, [isIntroCompleted]);
+  }, []);
 
   // Video playback management for Scene 4
   useEffect(() => {
@@ -130,7 +99,7 @@ export function CinematicIntro() {
       if (video.paused && !video.ended) {
         video.play().catch(() => {
           video.muted = true;
-          video.play().catch(() => { });
+          video.play().catch(() => {});
         });
       }
     } else {
@@ -151,8 +120,8 @@ export function CinematicIntro() {
     smoothProgress < 0.42
       ? 0
       : smoothProgress < 0.60
-        ? 1
-        : Math.max(0, 1 - (smoothProgress - 0.60) / 0.04);
+      ? 1
+      : Math.max(0, 1 - (smoothProgress - 0.60) / 0.04);
 
   // Scene 3: Pure Black (0.75 to 0.86)
   const isScene3Active = !isIntroCompleted && smoothProgress >= 0.74 && smoothProgress < 0.86;
@@ -160,72 +129,55 @@ export function CinematicIntro() {
     smoothProgress < 0.74
       ? 0
       : smoothProgress < 0.84
-        ? 1
-        : Math.max(0, 1 - (smoothProgress - 0.84) / 0.02);
+      ? 1
+      : Math.max(0, 1 - (smoothProgress - 0.84) / 0.02);
 
   // Scene 4: Video Reveal (0.86 to 1.00)
   const isScene4Active = isIntroCompleted || smoothProgress >= 0.86;
   const videoOpacity = isIntroCompleted
     ? 1
     : smoothProgress < 0.86
-      ? 0
-      : Math.min(1, (smoothProgress - 0.86) / 0.03);
+    ? 0
+    : Math.min(1, (smoothProgress - 0.86) / 0.03);
 
-  // Navbar is ONLY visible when the video is revealed or intro completed
+  // Navbar is visible when the video is revealed or intro completed
   const isNavbarVisible = isIntroCompleted || smoothProgress >= 0.86;
 
-  // Big Glitch Title: ONLY visible when the video is revealed or intro completed
+  // Big Glitch Title: visible when the video is revealed or intro completed
   const isVideoTitleActive = isIntroCompleted || smoothProgress >= 0.86;
   const videoTitleOpacity = isIntroCompleted
     ? 1
     : smoothProgress < 0.86
-      ? 0
-      : Math.min(1, (smoothProgress - 0.86) / 0.04);
+    ? 0
+    : Math.min(1, (smoothProgress - 0.86) / 0.04);
 
   const scrollToNext = () => {
     let nextTarget = 0.35;
     if (smoothProgress < 0.2) nextTarget = 0.52;
     else if (smoothProgress < 0.5) nextTarget = 0.80;
     else if (smoothProgress < 0.8) nextTarget = 1.0;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    window.scrollTo({ top: nextTarget * docHeight, behavior: "smooth" });
+    const trackHeight = window.innerHeight * 4.5;
+    window.scrollTo({ top: nextTarget * trackHeight, behavior: "smooth" });
   };
 
   return (
-    <div className="relative w-full bg-black text-[#f3f4f6]">
-      {/* Top Glassmorphism Navigation: THE BRIEFING, THE PLAN, THE LOOT */}
+    <div id="intro-hero" className="relative w-full bg-black text-[#f3f4f6]" style={{ height: "550vh" }}>
+      {/* Top Glassmorphism Navigation */}
       <CinematicNavbar
         progress={isIntroCompleted ? 1 : smoothProgress}
         visible={isNavbarVisible}
         isIntroCompleted={isIntroCompleted}
-        onNavigate={(ratio) => {
-          if (isIntroCompleted) return;
-          if (ratio >= 0.85) {
-            completedRef.current = true;
-            setSmoothProgress(1);
-            setIsIntroCompleted(true);
-            return;
-          }
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          if (docHeight > 0) {
-            window.scrollTo({ top: ratio * docHeight, behavior: "smooth" });
-          }
-        }}
       />
 
-      {/* Real Scroll Track: only rendered during the prologue before reaching this page */}
-      {!isIntroCompleted && (
-        <div style={{ height: "550vh" }} className="relative pointer-events-none" aria-hidden="true">
-          <div id="narrative-trigger-scene-1" className="absolute top-[20vh] h-[50vh] w-full" />
-          <div id="narrative-trigger-scene-2" className="absolute top-[210vh] h-[60vh] w-full" />
-          <div id="narrative-trigger-scene-3" className="absolute top-[380vh] h-[60vh] w-full" />
-        </div>
-      )}
+      {/* Narrative triggers along the track */}
+      <div id="narrative-trigger-scene-1" className="absolute top-[20vh] h-[50vh] w-full pointer-events-none" />
+      <div id="narrative-trigger-scene-2" className="absolute top-[210vh] h-[60vh] w-full pointer-events-none" />
+      <div id="narrative-trigger-scene-3" className="absolute top-[380vh] h-[60vh] w-full pointer-events-none" />
 
-      {/* Pinned Fixed Cinematic Viewport */}
-      <div className="fixed inset-0 w-full h-full overflow-hidden bg-black flex items-center justify-center select-none pt-14 md:pt-16">
-
-        {/* Layer 1: Pixel Canvas (unmounted when completed to eliminate previous chat and save performance) */}
+      {/* Pinned Sticky Cinematic Viewport */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black flex items-center justify-center select-none pt-14 md:pt-16">
+        
+        {/* Layer 1: Pixel Canvas */}
         {!isIntroCompleted && (
           <PixelCanvas
             progress={smoothProgress}
@@ -234,17 +186,15 @@ export function CinematicIntro() {
         )}
 
         {/* Layer 2: Subtle Film Vignette Overlay */}
-        {!isIntroCompleted && (
-          <div
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 80%, rgba(0,0,0,0.98) 100%)",
-            }}
-          />
-        )}
+        <div
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 80%, rgba(0,0,0,0.98) 100%)",
+          }}
+        />
 
-        {/* Layer 3: Narrative Subtitles (removed permanently once reaching this page) */}
+        {/* Layer 3: Narrative Subtitles (Scenes 1-3) */}
         {!isIntroCompleted && (
           <>
             {/* SCENE 1 SUBTITLES (The Professor) */}
@@ -254,7 +204,7 @@ export function CinematicIntro() {
               }`}
               style={{ opacity: isScene1Active ? scene1Opacity : 0 }}
             >
-              {/* Small mute toggle for the narrative sequence near the first story block */}
+              {/* Small mute toggle */}
               <div className="flex justify-center mb-3">
                 <button
                   type="button"
@@ -263,7 +213,9 @@ export function CinematicIntro() {
                   aria-label={isMuted ? "Unmute narrative typewriter audio" : "Mute narrative typewriter audio"}
                 >
                   <span>{isMuted ? "🔇" : "🔊"}</span>
-                  <span className="text-[10px] tracking-wider uppercase">{isMuted ? "Audio Muted" : "Typewriter Sound"}</span>
+                  <span className="text-[10px] tracking-wider uppercase">
+                    {isMuted ? "Audio Muted" : "Typewriter Sound"}
+                  </span>
                 </button>
               </div>
 
@@ -329,7 +281,7 @@ export function CinematicIntro() {
           </>
         )}
 
-        {/* SCENE 4: FINAL VIDEO REVEAL - FIT TO LENGTH */}
+        {/* SCENE 4: FINAL VIDEO REVEAL */}
         <div
           className={`absolute inset-0 z-30 flex items-center justify-center bg-black transition-opacity duration-1000 ease-in-out ${
             isScene4Active ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -339,7 +291,6 @@ export function CinematicIntro() {
             visibility: videoOpacity > 0 ? "visible" : "hidden",
           }}
         >
-          {/* Fit to full screen length and width */}
           <div className="relative w-full h-full min-h-screen flex items-center justify-center overflow-hidden bg-black">
             <video
               ref={videoRef}
@@ -360,7 +311,7 @@ export function CinematicIntro() {
               <source src="/videos/Money Heist video.mp4" type="video/mp4" />
             </video>
 
-            {/* Seamless edge vignette blending video perimeter into pure black background */}
+            {/* Seamless edge vignette */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -368,10 +319,10 @@ export function CinematicIntro() {
               }}
             />
 
-            {/* Dark tint overlay behind the title so video motion doesn't reduce contrast */}
+            {/* Dark tint overlay */}
             <div className="absolute inset-0 bg-black/25 pointer-events-none" />
 
-            {/* Big Glitch Logo positioned in the upper area above the characters */}
+            {/* Big Glitch Logo */}
             <div
               className={`absolute top-16 sm:top-20 md:top-24 lg:top-28 left-0 right-0 z-30 px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
                 isVideoTitleActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
@@ -390,10 +341,25 @@ export function CinematicIntro() {
               </div>
             </div>
 
+            {/* Scroll down into briefing indicator */}
+            <div
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 text-center cursor-pointer group pointer-events-auto"
+              onClick={() => {
+                document.getElementById("briefing")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              <div className="flex flex-col items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                <span className="text-[11px] uppercase tracking-[0.3em] text-[#E50914] font-mono font-bold">
+                  SCROLL FOR THE BRIEFING ↓
+                </span>
+                <div className="w-[1.5px] h-4 bg-[#E50914] animate-bounce" />
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* Subtle cinematic scroll indicator & jump hint (only during intro) */}
+        {/* Scroll indicator during prologue */}
         {!isIntroCompleted && smoothProgress < 0.85 && (
           <div
             className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 transition-opacity duration-500 text-center cursor-pointer group"
