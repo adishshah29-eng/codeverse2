@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Lock, Unlock, Coins } from "lucide-react";
 import MoneyRainCanvas from "@/components/cinematic/MoneyRainCanvas";
 import InteractiveVault from "@/components/cinematic/InteractiveVault";
 
@@ -202,19 +203,21 @@ export function TheLoot() {
               {activeVault && (
                 <button
                   onClick={handleCloseAll}
-                  className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-[#E50914] text-[10px] font-mono tracking-widest uppercase text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs"
+                  className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-[#E50914] text-[10px] font-mono tracking-widest uppercase text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs flex items-center gap-1.5"
                   title="Seal active vault"
                 >
-                  🔒 SEAL
+                  <Lock className="w-3 h-3 text-[#E50914]" />
+                  <span>SEAL</span>
                 </button>
               )}
 
               <button
                 onClick={handleReplayRain}
-                className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-[#E50914] text-[10px] font-mono tracking-widest uppercase text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs flex items-center justify-center gap-1"
+                className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-[#E50914] text-[10px] font-mono tracking-widest uppercase text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs flex items-center justify-center gap-1.5"
                 title="Trigger money rain"
               >
-                <span className="text-[#E50914]">↻</span> RAIN
+                <Coins className="w-3 h-3 text-[#C9A227]" />
+                <span>RAIN</span>
               </button>
             </div>
           </div>
