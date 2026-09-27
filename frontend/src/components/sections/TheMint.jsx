@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import djsceCctv from "@/assets/images/djsce_cctv.png";
+import VariableProximity from "@/components/ui/VariableProximity";
+import { BlurText, BlurFade } from "@/components/ui/BlurText";
 
 export function TheMint() {
+  const mintHeaderRef = useRef(null);
   const [mapType, setMapType] = useState("satellite"); // 'satellite' | 'roadmap'
   const [zoom, setZoom] = useState(19);
   const [reticleLocked, setReticleLocked] = useState(true);
@@ -135,7 +138,7 @@ export function TheMint() {
       <div className="max-w-7xl mx-auto relative z-10">
 
         {/* ================= TOP HEADER ================= */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+        <div ref={mintHeaderRef} className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8 relative">
           
           {/* Left Title Block */}
           <div>
@@ -146,12 +149,22 @@ export function TheMint() {
             </div>
 
             <h2 className="font-heist text-5xl sm:text-7xl md:text-8xl tracking-widest text-[#F5F2ED] uppercase mint-stencil-distress leading-none my-1">
-              THE MINT
+              <VariableProximity
+                label="THE MINT"
+                className="cursor-default"
+                fromFontVariationSettings="'wght' 700, 'opsz' 30"
+                toFontVariationSettings="'wght' 1000, 'opsz' 40"
+                containerRef={mintHeaderRef}
+                radius={130}
+                falloff="linear"
+              />
             </h2>
 
-            <p className="font-mono text-xs sm:text-sm tracking-[0.28em] uppercase text-neutral-400 font-medium mt-3">
-              THE TARGET HAS BEEN IDENTIFIED.
-            </p>
+            <BlurText
+              text="THE TARGET HAS BEEN IDENTIFIED."
+              className="font-mono text-xs sm:text-sm tracking-[0.28em] uppercase text-neutral-400 font-medium mt-3 block"
+              delay={0.15}
+            />
           </div>
 
           {/* Right Live Registration Countdown Badge */}

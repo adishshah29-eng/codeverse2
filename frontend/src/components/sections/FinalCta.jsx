@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import djsceBuildingBw from "@/assets/images/djsce_building_bw.png";
 import { MapPin, IndianRupee, Users, ArrowRight, Target } from "lucide-react";
+import VariableProximity from "@/components/ui/VariableProximity";
+import { BlurText, BlurFade } from "@/components/ui/BlurText";
 
 export function FinalCta() {
+  const ctaHeaderRef = useRef(null);
   const [countdown, setCountdown] = useState({
     days: 2,
     hours: 14,
@@ -120,24 +123,40 @@ export function FinalCta() {
         </div>
 
         {/* Major Stencil Headline with Crosshairs */}
-        <div className="relative inline-block my-2">
+        <div ref={ctaHeaderRef} className="relative inline-block my-2">
           {/* Left and right tactical red tick marks */}
           <div className="absolute -left-6 sm:-left-12 top-[60%] -translate-y-1/2 w-4 sm:w-8 h-[2px] bg-[#E50914]" />
           <div className="absolute -right-6 sm:-right-12 top-[60%] -translate-y-1/2 w-4 sm:w-8 h-[2px] bg-[#E50914]" />
 
           <h2 className="font-heist text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white uppercase leading-none select-none drop-shadow-[0_4px_30px_rgba(255,255,255,0.22)]">
-            ENTER THE<br />MINT
+            <VariableProximity
+              label="ENTER THE MINT"
+              className="cursor-default block"
+              fromFontVariationSettings="'wght' 700, 'opsz' 30"
+              toFontVariationSettings="'wght' 1000, 'opsz' 40"
+              containerRef={ctaHeaderRef}
+              radius={140}
+              falloff="linear"
+            />
           </h2>
         </div>
 
         {/* Narrative Subtitle */}
         <div className="text-lg sm:text-xl md:text-2xl text-neutral-300 font-light mt-6 mb-8 space-y-1 max-w-xl">
-          <p>The Professor has a plan.</p>
-          <p className="text-[#E50914] font-semibold tracking-wide">All he needs is your crew.</p>
+          <BlurText
+            text="The Professor has a plan."
+            className="block"
+            delay={0.15}
+          />
+          <BlurText
+            text="All he needs is your crew."
+            className="text-[#E50914] font-semibold tracking-wide block"
+            delay={0.3}
+          />
         </div>
 
         {/* Main CTA Button: JOIN THE CREW */}
-        <div className="mb-14">
+        <BlurFade delay={0.2} className="mb-14">
           <a
             href="https://unstop.com"
             target="_blank"
@@ -151,7 +170,7 @@ export function FinalCta() {
             <span>JOIN THE CREW</span>
             <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1.5 transition-transform" />
           </a>
-        </div>
+        </BlurFade>
 
         {/* ================= BOTTOM TACTICAL CREDENTIALS BAR ================= */}
         <div className="w-full max-w-4xl relative p-5 sm:p-7 bg-[#050505]/85 backdrop-blur-md border border-[#222222] shadow-[0_20px_50px_rgba(0,0,0,0.95)]">

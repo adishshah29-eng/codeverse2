@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import maskedHeistImg from "@/assets/images/masked-heist-nobg.png";
+import VariableProximity from "@/components/ui/VariableProximity";
+import { BlurText, BlurFade } from "@/components/ui/BlurText";
 
 export function TheBriefing() {
+  const briefingHeaderRef = useRef(null);
+
   const OBJECTIVES = [
     {
       step: "01",
@@ -57,20 +61,32 @@ export function TheBriefing() {
         </div>
 
         {/* Section title & Identity declaration */}
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+        <div ref={briefingHeaderRef} className="text-center max-w-3xl mx-auto mb-10 sm:mb-14 relative">
           <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3">
             TACTICAL PROTOCOL · 09.10
           </p>
           <h2 className="font-heist text-4xl sm:text-6xl md:text-7xl tracking-wider text-[#F5F2ED] uppercase">
-            YOUR OBJECTIVE
+            <VariableProximity
+              label="YOUR OBJECTIVE"
+              className="cursor-default"
+              fromFontVariationSettings="'wght' 700, 'opsz' 30"
+              toFontVariationSettings="'wght' 1000, 'opsz' 40"
+              containerRef={briefingHeaderRef}
+              radius={120}
+              falloff="linear"
+            />
           </h2>
           <div className="mt-4 flex flex-col items-center justify-center gap-1">
-            <p className="font-mono text-xs sm:text-sm text-[#A3A3A3] tracking-[0.22em] uppercase">
-              YOU ARE NOT HACKATHON TEAMS.
-            </p>
-            <p className="font-heist text-xl sm:text-2xl text-[#E50914] tracking-widest uppercase font-bold drop-shadow-[0_0_20px_rgba(229,9,20,0.5)]">
-              YOU ARE THE CREW.
-            </p>
+            <BlurText
+              text="YOU ARE NOT HACKATHON TEAMS."
+              className="font-mono text-xs sm:text-sm text-[#A3A3A3] tracking-[0.22em] uppercase"
+              delay={0.15}
+            />
+            <BlurText
+              text="YOU ARE THE CREW."
+              className="font-heist text-xl sm:text-2xl text-[#E50914] tracking-widest uppercase font-bold drop-shadow-[0_0_20px_rgba(229,9,20,0.5)]"
+              delay={0.3}
+            />
           </div>
         </div>
 

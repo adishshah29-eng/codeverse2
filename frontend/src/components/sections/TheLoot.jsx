@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import MoneyRainCanvas from "@/components/cinematic/MoneyRainCanvas";
 import InteractiveVault from "@/components/cinematic/InteractiveVault";
+import VariableProximity from "@/components/ui/VariableProximity";
+import { BlurFade } from "@/components/ui/BlurText";
 
 export function TheLoot() {
   const [hasPlayed, setHasPlayed] = useState(false);
@@ -11,6 +13,7 @@ export function TheLoot() {
   const [activeVault, setActiveVault] = useState("01");
 
   const sectionRef = useRef(null);
+  const lootHeaderRef = useRef(null);
   const hasTriggeredRef = useRef(false);
 
   // Check prefers-reduced-motion
@@ -130,7 +133,7 @@ export function TheLoot() {
         {/* ============================================================== */}
         {/* TOP HEADER: INVENTORY · VAULT RESERVE & TOTAL PRINTED RESERVE  */}
         {/* ============================================================== */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16">
+        <div ref={lootHeaderRef} className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 relative">
           {/* Left Title Block */}
           <div>
             <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-2 flex items-center gap-2">
@@ -138,19 +141,29 @@ export function TheLoot() {
               INVENTORY · VAULT RESERVE
             </p>
             <h2 className="font-heist text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-[#F5F2ED] uppercase">
-              THE LOOT
+              <VariableProximity
+                label="THE LOOT"
+                className="cursor-default"
+                fromFontVariationSettings="'wght' 700, 'opsz' 30"
+                toFontVariationSettings="'wght' 1000, 'opsz' 40"
+                containerRef={lootHeaderRef}
+                radius={130}
+                falloff="linear"
+              />
             </h2>
           </div>
 
           {/* Right Total Prize Pool Callout Box */}
-          <div className="p-5 sm:p-6 bg-[#111111]/90 border border-[#262626] backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] min-w-[220px]">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-[#A3A3A3] uppercase block mb-1">
-              TOTAL PRINTED RESERVE
-            </span>
-            <span className="font-heist text-4xl sm:text-5xl text-[#C9A227] tracking-wider block drop-shadow-[0_0_20px_rgba(201,162,39,0.35)]">
-              ₹25,000
-            </span>
-          </div>
+          <BlurFade delay={0.2}>
+            <div className="p-5 sm:p-6 bg-[#111111]/90 border border-[#262626] backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] min-w-[220px]">
+              <span className="font-mono text-[10px] tracking-[0.25em] text-[#A3A3A3] uppercase block mb-1">
+                TOTAL PRINTED RESERVE
+              </span>
+              <span className="font-heist text-4xl sm:text-5xl text-[#C9A227] tracking-wider block drop-shadow-[0_0_20px_rgba(201,162,39,0.35)]">
+                ₹25,000
+              </span>
+            </div>
+          </BlurFade>
         </div>
 
         {/* ============================================================== */}

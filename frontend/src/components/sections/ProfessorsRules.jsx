@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import VariableProximity from "@/components/ui/VariableProximity";
+import { BlurText, BlurFade } from "@/components/ui/BlurText";
 
 const RULES = [
   {
@@ -52,6 +54,7 @@ const FAQS = [
 ];
 
 export function ProfessorsRules() {
+  const rulesHeaderRef = useRef(null);
   const [openFaq, setOpenFaq] = useState(null);
 
   const toggleFaq = (idx) => {
@@ -65,16 +68,26 @@ export function ProfessorsRules() {
     >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-16 md:mb-24">
+        <div ref={rulesHeaderRef} className="mb-16 md:mb-24 relative">
           <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3">
             READ BEFORE YOU ENTER · PROTOCOLS
           </p>
           <h2 className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-[#F5F2ED] uppercase">
-            THE PROFESSOR'S RULES
+            <VariableProximity
+              label="THE PROFESSOR'S RULES"
+              className="cursor-default"
+              fromFontVariationSettings="'wght' 700, 'opsz' 30"
+              toFontVariationSettings="'wght' 1000, 'opsz' 40"
+              containerRef={rulesHeaderRef}
+              radius={130}
+              falloff="linear"
+            />
           </h2>
-          <p className="font-sans text-lg sm:text-xl text-[#A3A3A3] mt-4 font-light max-w-2xl">
-            In any operation, discipline is the difference between freedom and capture.
-          </p>
+          <BlurText
+            text="In any operation, discipline is the difference between freedom and capture."
+            className="font-sans text-lg sm:text-xl text-[#A3A3A3] mt-4 font-light max-w-2xl block"
+            delay={0.15}
+          />
         </div>
 
         {/* The 5 Non-Negotiable Rules */}
