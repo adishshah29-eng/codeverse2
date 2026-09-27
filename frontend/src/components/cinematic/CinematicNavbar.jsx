@@ -1,4 +1,5 @@
 import React from "react";
+import GlitchText from "./GlitchText";
 
 /**
  * CinematicNavbar
@@ -9,7 +10,7 @@ import React from "react";
  * - Interactive smooth scrolling to corresponding story scenes
  * - Active state tracking based on scroll progress
  */
-export function CinematicNavbar({ progress = 0, onNavigate }) {
+export function CinematicNavbar({ progress = 0, onNavigate, visible }) {
   const scrollToScene = (ratio) => {
     if (onNavigate) {
       onNavigate(ratio);
@@ -21,6 +22,8 @@ export function CinematicNavbar({ progress = 0, onNavigate }) {
     }
   };
 
+  const isNavbarVisible = visible !== undefined ? visible : progress >= 0.25;
+
   // Active section calculation
   const isBriefingActive = progress < 0.35;
   const isPlanActive = progress >= 0.35 && progress < 0.75;
@@ -29,16 +32,26 @@ export function CinematicNavbar({ progress = 0, onNavigate }) {
   return (
     <nav
       aria-label="Cinematic Navigation"
-      className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-black/35 border-b border-white/10 transition-colors duration-500"
+      className={`fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-black/35 border-b border-white/10 transition-all duration-700 ease-out ${
+        isNavbarVisible
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 -translate-y-full pointer-events-none"
+      }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-14 md:h-16 flex items-center justify-between select-none">
         {/* Left minimal branding */}
         <div className="flex items-center gap-2.5">
-          <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-          <span className="font-mono text-xs tracking-[0.25em] text-neutral-300 font-semibold uppercase">
-            MONEY HEIST
-          </span>
+          <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0" />
+          <GlitchText
+            speed={0.8}
+            enableShadows={true}
+            enableOnHover={false}
+            className="font-heist text-xs sm:text-sm tracking-[0.18em] text-white font-bold uppercase"
+          >
+            CODEVERSE 2.0
+          </GlitchText>
         </div>
+
 
         {/* Center / Navigation items: THE BRIEFING, THE PLAN, THE LOOT */}
         <div className="flex items-center space-x-6 sm:space-x-10 font-mono text-[11px] sm:text-xs tracking-[0.22em] uppercase">

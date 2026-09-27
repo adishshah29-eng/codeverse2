@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import PixelCanvas from "./PixelCanvas";
 import ScrollTypewriterBlock from "./ScrollTypewriterBlock";
 import CinematicNavbar from "./CinematicNavbar";
+import GlitchText from "./GlitchText";
 import { useSharedTypewriterAudio } from "@/hooks/useSharedTypewriterAudio";
 import moneyHeistVideo from "@/assets/videos/moneyheistvd.mp4";
 
@@ -120,6 +121,24 @@ export function CinematicIntro() {
       ? 0
       : Math.min(1, (smoothProgress - 0.86) / 0.03);
 
+
+  // Navbar is hidden at the start when narrative words are typing out,
+  // and smoothly slides in only after scrolling down to Scene 2 (progress >= 0.25)
+  const isNavbarVisible = smoothProgress >= 0.25;
+
+  // Big Glitch Title: completely hidden at the start during Scene 1 intro,
+  // prominently rendered in big font in middle above the Money Heist characters on the attached page (Scene 2),
+  // and smoothly fades out before the final video reveal
+  const isCrewTitleActive = smoothProgress >= 0.25 && smoothProgress < 0.82;
+  const crewTitleOpacity =
+    smoothProgress < 0.25
+      ? 0
+      : smoothProgress < 0.32
+        ? Math.min(1, (smoothProgress - 0.25) / 0.05)
+        : smoothProgress < 0.76
+          ? 1
+          : Math.max(0, 1 - (smoothProgress - 0.76) / 0.06);
+
   const scrollToNext = () => {
     let nextTarget = 0.35;
     if (smoothProgress < 0.2) nextTarget = 0.52;
@@ -131,9 +150,10 @@ export function CinematicIntro() {
 
   return (
     <div className="relative w-full bg-black text-[#f3f4f6]">
-      {/* Top Glassmorphism Navigation: THE BRIEFING, THE PLAN, THE LOOT */}
+      {/* Top Glassmorphism Navigation: THE BRIEFING, THE PLAN, THE LOOT (hidden at start, appears on scroll) */}
       <CinematicNavbar
         progress={smoothProgress}
+        visible={isNavbarVisible}
         onNavigate={(ratio) => {
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           if (docHeight > 0) {
@@ -166,6 +186,26 @@ export function CinematicIntro() {
               "radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 80%, rgba(0,0,0,0.98) 100%)",
           }}
         />
+
+        {/* Site Title: CODEVERSE 2.0 with continuous Glitch Effect in big font in middle above the Money Heist characters */}
+        <div
+          className={`absolute top-20 sm:top-24 md:top-28 lg:top-32 left-0 right-0 z-20 px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
+            isCrewTitleActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+          }`}
+          style={{ opacity: isCrewTitleActive ? crewTitleOpacity : 0 }}
+        >
+          <div className="inline-block pointer-events-auto">
+            <GlitchText
+              speed={0.8}
+              enableShadows={true}
+              enableOnHover={false}
+              className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-white whitespace-nowrap drop-shadow-[0_0_30px_rgba(200,16,46,0.35)]"
+            >
+              CODEVERSE 2.0
+            </GlitchText>
+          </div>
+        </div>
+
 
         {/* Layer 3: Narrative Subtitles */}
 
