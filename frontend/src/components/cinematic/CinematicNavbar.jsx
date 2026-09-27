@@ -32,7 +32,7 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ["briefing", "plan", "schedule", "loot", "rules", "enter"];
+    const sectionIds = ["briefing", "plan", "schedule", "loot", "rules", "mint", "enter"];
     const handleScroll = () => {
       const scrollPos = window.scrollY + 200;
       for (let i = sectionIds.length - 1; i >= 0; i--) {
@@ -150,6 +150,21 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
               <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E50914] rounded-full" />
             )}
           </button>
+
+          <button
+            type="button"
+            onClick={() => scrollTo("mint")}
+            className={`relative py-1 transition-all duration-300 cursor-pointer ${
+              activeSection === "mint"
+                ? "text-white font-bold"
+                : "text-[#A3A3A3] hover:text-white"
+            }`}
+          >
+            THE MINT
+            {activeSection === "mint" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E50914] rounded-full" />
+            )}
+          </button>
         </div>
 
         {/* Right CTA Button & Mobile Toggle */}
@@ -212,6 +227,13 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
             className="block w-full text-left py-2 text-[#A3A3A3] hover:text-white"
           >
             RULES
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollTo("mint")}
+            className="block w-full text-left py-2 text-[#A3A3A3] hover:text-white"
+          >
+            THE MINT
           </button>
           <button
             type="button"
