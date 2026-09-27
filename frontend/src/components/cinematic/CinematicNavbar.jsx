@@ -1,5 +1,4 @@
 import React from "react";
-import GlitchText from "./GlitchText";
 
 /**
  * CinematicNavbar
@@ -22,7 +21,7 @@ export function CinematicNavbar({ progress = 0, onNavigate, visible }) {
     }
   };
 
-  const isNavbarVisible = visible !== undefined ? visible : progress >= 0.25;
+  const isNavbarVisible = visible !== undefined ? visible : progress >= 0.86;
 
   // Active section calculation
   const isBriefingActive = progress < 0.35;
@@ -42,15 +41,11 @@ export function CinematicNavbar({ progress = 0, onNavigate, visible }) {
         {/* Left minimal branding */}
         <div className="flex items-center gap-2.5">
           <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shrink-0" />
-          <GlitchText
-            speed={0.8}
-            enableShadows={true}
-            enableOnHover={false}
-            className="font-heist text-xs sm:text-sm tracking-[0.18em] text-white font-bold uppercase"
-          >
+          <span className="font-heist text-xs sm:text-sm tracking-[0.18em] text-white font-bold uppercase whitespace-nowrap">
             CODEVERSE 2.0
-          </GlitchText>
+          </span>
         </div>
+
 
 
         {/* Center / Navigation items: THE BRIEFING, THE PLAN, THE LOOT */}

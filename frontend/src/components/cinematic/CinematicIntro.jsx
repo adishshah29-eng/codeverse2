@@ -122,22 +122,15 @@ export function CinematicIntro() {
       : Math.min(1, (smoothProgress - 0.86) / 0.03);
 
 
-  // Navbar is hidden at the start when narrative words are typing out,
-  // and smoothly slides in only after scrolling down to Scene 2 (progress >= 0.25)
-  const isNavbarVisible = smoothProgress >= 0.25;
+  // Navbar is ONLY visible when the video is revealed (Scene 4: smoothProgress >= 0.86)
+  const isNavbarVisible = smoothProgress >= 0.86;
 
-  // Big Glitch Title: completely hidden at the start during Scene 1 intro,
-  // prominently rendered in big font in middle above the Money Heist characters on the attached page (Scene 2),
-  // and smoothly fades out before the final video reveal
-  const isCrewTitleActive = smoothProgress >= 0.25 && smoothProgress < 0.82;
-  const crewTitleOpacity =
-    smoothProgress < 0.25
+  // Big Glitch Title: ONLY visible when the video is revealed (Scene 4: smoothProgress >= 0.86) in the middle over the video
+  const isVideoTitleActive = smoothProgress >= 0.86;
+  const videoTitleOpacity =
+    smoothProgress < 0.86
       ? 0
-      : smoothProgress < 0.32
-        ? Math.min(1, (smoothProgress - 0.25) / 0.05)
-        : smoothProgress < 0.76
-          ? 1
-          : Math.max(0, 1 - (smoothProgress - 0.76) / 0.06);
+      : Math.min(1, (smoothProgress - 0.86) / 0.04);
 
   const scrollToNext = () => {
     let nextTarget = 0.35;
@@ -187,24 +180,6 @@ export function CinematicIntro() {
           }}
         />
 
-        {/* Site Title: CODEVERSE 2.0 with continuous Glitch Effect in big font in middle above the Money Heist characters */}
-        <div
-          className={`absolute top-20 sm:top-24 md:top-28 lg:top-32 left-0 right-0 z-20 px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
-            isCrewTitleActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
-          }`}
-          style={{ opacity: isCrewTitleActive ? crewTitleOpacity : 0 }}
-        >
-          <div className="inline-block pointer-events-auto">
-            <GlitchText
-              speed={0.8}
-              enableShadows={true}
-              enableOnHover={false}
-              className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-white whitespace-nowrap drop-shadow-[0_0_30px_rgba(200,16,46,0.35)]"
-            >
-              CODEVERSE 2.0
-            </GlitchText>
-          </div>
-        </div>
 
 
         {/* Layer 3: Narrative Subtitles */}
@@ -270,7 +245,7 @@ export function CinematicIntro() {
           </div>
         </div>
 
-        {/* SCENE 3 SUBTITLES (Pure Black Void) */}
+        {/* SCENE 3 SUBTITLES (Pure Black Void - No navbar, no logo) */}
         <div
           className={`absolute inset-0 z-20 flex items-center justify-center px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
             isScene3Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
@@ -324,6 +299,29 @@ export function CinematicIntro() {
                 boxShadow: "inset 0 0 100px 50px #000000",
               }}
             />
+
+            {/* Dark tint overlay behind the title so video motion doesn't reduce contrast */}
+            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+
+            {/* Big Glitch Logo positioned in the upper area above the characters */}
+            <div
+              className={`absolute top-16 sm:top-20 md:top-24 lg:top-28 left-0 right-0 z-30 px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
+                isVideoTitleActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+              }`}
+              style={{ opacity: isVideoTitleActive ? videoTitleOpacity : 0 }}
+            >
+              <div className="inline-block pointer-events-auto">
+                <GlitchText
+                  speed={0.8}
+                  enableShadows={true}
+                  enableOnHover={false}
+                  className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-white whitespace-nowrap drop-shadow-[0_0_50px_rgba(200,16,46,0.8)]"
+                >
+                  CODEVERSE 2.0
+                </GlitchText>
+              </div>
+            </div>
+
           </div>
         </div>
 

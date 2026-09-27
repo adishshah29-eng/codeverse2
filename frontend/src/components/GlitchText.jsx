@@ -51,6 +51,8 @@ const GlitchText = ({
       `hover:before:content-[attr(data-text)] hover:before:opacity-100 hover:before:[text-shadow:var(--before-shadow)] hover:before:animate-glitch-before`;
 
 
+
+
   const combinedClasses = `${baseClasses} ${pseudoClasses} ${className}`;
 
   return (
