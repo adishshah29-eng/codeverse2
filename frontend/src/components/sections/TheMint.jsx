@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import djsceCctv from "@/assets/images/djsce_cctv.png";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurText, BlurFade } from "@/components/ui/BlurText";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 export function TheMint() {
   const mintHeaderRef = useRef(null);
@@ -145,7 +146,7 @@ export function TheMint() {
             <div className="flex items-center gap-2.5 font-mono text-[11px] sm:text-xs tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-2">
               <span>THE PROFESSOR'S FILE</span>
               <span className="text-neutral-600">·</span>
-              <span className="text-white">04</span>
+              <span className="text-white"><AnimatedCounter value={4} padDigits={2} /></span>
             </div>
 
             <h2 className="font-heist text-5xl sm:text-7xl md:text-8xl tracking-widest text-[#F5F2ED] uppercase mint-stencil-distress leading-none my-1">
@@ -245,7 +246,11 @@ export function TheMint() {
                 <div className="grid grid-cols-2 gap-4 font-mono text-xs tracking-wider uppercase mb-7">
                   <div>
                     <span className="text-neutral-500 text-[10px] block mb-1">OPERATION DATE</span>
-                    <span className="text-neutral-200 font-semibold">09 OCTOBER 2026</span>
+                    <span className="text-neutral-200 font-semibold flex items-center gap-1">
+                      <AnimatedCounter value={9} padDigits={2} />
+                      <span>OCTOBER</span>
+                      <AnimatedCounter value={2026} format={false} />
+                    </span>
                   </div>
                   <div>
                     <span className="text-neutral-500 text-[10px] block mb-1">REGISTRATION DESK</span>
@@ -303,7 +308,10 @@ export function TheMint() {
                 </div>
                 <div>
                   <span className="text-[9px] text-neutral-500 block">SECTOR</span>
-                  <span className="text-neutral-200 font-bold">LEVEL 03</span>
+                  <span className="text-neutral-200 font-bold flex items-center justify-center gap-1">
+                    <span>LEVEL</span>
+                    <AnimatedCounter value={3} padDigits={2} />
+                  </span>
                 </div>
               </div>
             </div>
@@ -321,9 +329,14 @@ export function TheMint() {
                 
                 {/* Cam & Signal */}
                 <div className="flex items-center gap-3">
-                  <span className="text-neutral-200 font-bold">CAM 07 · SATELLITE</span>
+                  <span className="text-neutral-200 font-bold flex items-center gap-1">
+                    <span>CAM</span>
+                    <AnimatedCounter value={7} padDigits={2} />
+                    <span>· SATELLITE</span>
+                  </span>
                   <div className="hidden sm:flex items-center gap-1 text-[9px] text-neutral-400">
-                    <span>SIGNAL 98%</span>
+                    <span>SIGNAL</span>
+                    <AnimatedCounter value={98} suffix="%" duration={1.5} className="font-bold text-neutral-200" />
                     <div className="flex gap-0.5 items-end h-2.5">
                       <div className="w-1 h-1 bg-[#E50914]" />
                       <div className="w-1 h-1.5 bg-[#E50914]" />

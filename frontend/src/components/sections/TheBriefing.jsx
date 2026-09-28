@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import maskedHeistImg from "@/assets/images/masked-heist-nobg.png";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurText, BlurFade } from "@/components/ui/BlurText";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 export function TheBriefing() {
   const briefingHeaderRef = useRef(null);
@@ -56,7 +57,7 @@ export function TheBriefing() {
           </div>
           <div className="flex items-center gap-4 text-[#666666]">
             <span>LOCATION: ROYAL MINT (DJSCE)</span>
-            <span className="hidden sm:inline">CLEARANCE: LEVEL 5</span>
+            <span className="hidden sm:inline">CLEARANCE: LEVEL <AnimatedCounter value={5} duration={1} /></span>
           </div>
         </div>
 
@@ -117,8 +118,12 @@ export function TheBriefing() {
                 FOUR STEPS. ZERO COMPROMISES.
               </h3>
             </div>
-            <div className="font-mono text-[11px] text-[#A3A3A3] tracking-widest uppercase px-3.5 py-1.5 bg-[#171717] border border-[#292929] shrink-0 self-start sm:self-auto">
-              CREWS OF 3 · 10 HOURS
+            <div className="font-mono text-[11px] text-[#A3A3A3] tracking-widest uppercase px-3.5 py-1.5 bg-[#171717] border border-[#292929] shrink-0 self-start sm:self-auto flex items-center gap-1.5">
+              <span>CREWS OF</span>
+              <AnimatedCounter value={3} className="text-[#E50914] font-bold" />
+              <span>·</span>
+              <AnimatedCounter value={10} className="text-[#E50914] font-bold" />
+              <span>HOURS</span>
             </div>
           </div>
 
@@ -132,7 +137,7 @@ export function TheBriefing() {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="font-mono text-xs font-bold text-[#E50914] tracking-widest">
-                      {item.step}
+                      <AnimatedCounter value={parseInt(item.step, 10)} padDigits={2} duration={1.2} />
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-[#292929] group-hover:bg-[#E50914] transition-colors" />
                   </div>
@@ -151,7 +156,9 @@ export function TheBriefing() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-[#1a1a1a] flex items-center justify-between font-mono text-[10px] text-[#666666] tracking-widest uppercase">
-                  <span>PHASE {idx < 3 ? "01" : "02"}</span>
+                  <span>
+                    PHASE <AnimatedCounter value={idx < 3 ? 1 : 2} padDigits={2} duration={0.8} />
+                  </span>
                   <span className="text-[#E50914]">→</span>
                 </div>
               </div>

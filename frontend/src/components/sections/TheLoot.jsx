@@ -3,6 +3,7 @@ import MoneyRainCanvas from "@/components/cinematic/MoneyRainCanvas";
 import InteractiveVault from "@/components/cinematic/InteractiveVault";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurFade } from "@/components/ui/BlurText";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 export function TheLoot() {
   const [hasPlayed, setHasPlayed] = useState(false);
@@ -160,7 +161,7 @@ export function TheLoot() {
                 TOTAL PRINTED RESERVE
               </span>
               <span className="font-heist text-4xl sm:text-5xl text-[#C9A227] tracking-wider block drop-shadow-[0_0_20px_rgba(201,162,39,0.35)]">
-                ₹25,000
+                <AnimatedCounter value={25000} prefix="₹" duration={2} />
               </span>
             </div>
           </BlurFade>

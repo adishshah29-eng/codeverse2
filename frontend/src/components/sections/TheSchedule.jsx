@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import hangingMoneyImg from "../../assets/images/hanging_money_vignette.png";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 const TIMELINE = [
   {
@@ -226,8 +227,11 @@ export function TheSchedule() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 md:mb-20">
           <div>
-            <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3">
-              09 OCTOBER · 10 HOURS
+            <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3 flex items-center gap-1.5">
+              <AnimatedCounter value={9} padDigits={2} />
+              <span>OCTOBER ·</span>
+              <AnimatedCounter value={10} />
+              <span>HOURS</span>
             </p>
             <h2 className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-[#F5F2ED] uppercase">
               THE SCHEDULE

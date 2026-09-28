@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Lock, Unlock } from "lucide-react";
 import vaultClosedImg from "@/assets/images/vault_closed_hd.png";
 import vaultOpenImg from "@/assets/images/vault_open_hd.png";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 /**
  * Synthesizes a realistic mechanical bank vault lock & bolt sound via Web Audio API.
@@ -161,7 +162,15 @@ export function InteractiveVault({
                 textShadow: isMiddle ? "0 0 16px rgba(201,162,39,0.7)" : "0 0 14px rgba(229,9,20,0.6)",
               }}
             >
-              {amount}
+              {isOpen ? (
+                <AnimatedCounter
+                  value={parseInt(amount.replace(/[^0-9]/g, ""), 10) || 0}
+                  prefix="₹"
+                  duration={1.2}
+                />
+              ) : (
+                amount
+              )}
             </div>
 
             {/* Perk / Trophy */}

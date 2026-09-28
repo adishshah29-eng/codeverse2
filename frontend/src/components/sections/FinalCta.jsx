@@ -3,6 +3,7 @@ import djsceBuildingBw from "@/assets/images/djsce_building_bw.png";
 import { MapPin, IndianRupee, Users, ArrowRight, Target } from "lucide-react";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurText, BlurFade } from "@/components/ui/BlurText";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 export function FinalCta() {
   const ctaHeaderRef = useRef(null);
@@ -96,7 +97,7 @@ export function FinalCta() {
 
           <div className="flex items-center gap-2 text-white font-bold tracking-[0.2em] uppercase text-[11px] sm:text-xs">
             <Target className="w-3.5 h-3.5 text-[#E50914] animate-pulse" />
-            <span>REGISTRATION OPENS 29 SEP</span>
+            <span>REGISTRATION OPENS <AnimatedCounter value={29} /> SEP</span>
           </div>
 
           <div className="w-[1px] h-4 bg-[#262626]" />
@@ -207,8 +208,9 @@ export function FinalCta() {
                 <span className="text-neutral-500 text-[10px] tracking-[0.2em] uppercase block mb-0.5">
                   REGISTRATION
                 </span>
-                <span className="text-[#F59E0B] text-xs sm:text-sm font-bold tracking-wider">
-                  ₹99 PER CREW
+                <span className="text-[#F59E0B] text-xs sm:text-sm font-bold tracking-wider flex items-center gap-1">
+                  <AnimatedCounter value={99} prefix="₹" />
+                  <span>PER CREW</span>
                 </span>
               </div>
             </div>
@@ -222,8 +224,10 @@ export function FinalCta() {
                 <span className="text-neutral-500 text-[10px] tracking-[0.2em] uppercase block mb-0.5">
                   CREW SIZE
                 </span>
-                <span className="text-white text-xs sm:text-sm font-bold tracking-wider">
-                  STRICTLY 3 MEMBERS
+                <span className="text-white text-xs sm:text-sm font-bold tracking-wider flex items-center gap-1">
+                  <span>STRICTLY</span>
+                  <AnimatedCounter value={3} />
+                  <span>MEMBERS</span>
                 </span>
               </div>
             </div>

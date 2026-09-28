@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import crewImg from "@/assets/images/crew.png";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurText, BlurFade } from "@/components/ui/BlurText";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 export function ThePlan() {
   const planHeaderRef = useRef(null);
@@ -14,8 +15,11 @@ export function ThePlan() {
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div ref={planHeaderRef} className="mb-16 md:mb-24 relative">
-          <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3">
-            BLUEPRINT · PROTOCOL 09.10
+          <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3 flex items-center gap-1.5">
+            <span>BLUEPRINT · PROTOCOL</span>
+            <AnimatedCounter value={9} padDigits={2} />
+            <span>.</span>
+            <AnimatedCounter value={10} padDigits={2} />
           </p>
           <h2 className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-[#F5F2ED] uppercase">
             <VariableProximity
@@ -43,7 +47,7 @@ export function ThePlan() {
             <div className="h-full group relative p-8 sm:p-10 bg-[#111111] border border-[#292929] hover:border-[#E50914]/60 transition-all duration-500">
               <div className="flex items-center justify-between pb-6 mb-6 border-b border-[#292929]">
                 <span className="font-mono text-xs tracking-[0.25em] text-[#E50914] uppercase font-bold">
-                  PHASE 01
+                  PHASE <AnimatedCounter value={1} padDigits={2} />
                 </span>
                 <span className="font-mono text-xs text-[#A3A3A3] tracking-widest">
                   10:00 AM – 1:30 PM
@@ -55,7 +59,7 @@ export function ThePlan() {
               </h3>
 
               <p className="text-sm sm:text-base text-[#A3A3A3] leading-relaxed mb-8 font-light">
-                You’ve entered the Royal Mint. The Professor briefed you on the tasks. Complete them fast, and complete them right. Only the top 10 crews move on.
+                You’ve entered the Royal Mint. The Professor briefed you on the tasks. Complete them fast, and complete them right. Only the top <AnimatedCounter value={10} className="text-[#E50914] font-bold" /> crews move on.
               </p>
 
               {/* Classified Security Stamp */}
@@ -71,7 +75,7 @@ export function ThePlan() {
             <div className="h-full group relative p-8 sm:p-10 bg-[#111111] border border-[#292929] hover:border-[#E50914]/60 transition-all duration-500">
               <div className="flex items-center justify-between pb-6 mb-6 border-b border-[#292929]">
                 <span className="font-mono text-xs tracking-[0.25em] text-[#E50914] uppercase font-bold">
-                  PHASE 02
+                  PHASE <AnimatedCounter value={2} padDigits={2} />
                 </span>
                 <span className="font-mono text-xs text-[#A3A3A3] tracking-widest">
                   2:30 PM – 4:30 PM
