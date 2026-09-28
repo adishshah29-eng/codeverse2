@@ -9,7 +9,7 @@ export function ThePlan() {
   return (
     <section
       id="plan"
-      className="relative w-full bg-[#080808] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929] overflow-hidden"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929]/80 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}

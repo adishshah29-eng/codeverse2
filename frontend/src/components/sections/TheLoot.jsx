@@ -85,7 +85,7 @@ export function TheLoot() {
     <section
       id="loot"
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-[#080808] text-[#F5F2ED] py-20 sm:py-28 md:py-32 px-4 sm:px-6 lg:px-12 border-t border-[#222222] overflow-hidden select-none flex flex-col justify-between"
+      className="relative w-full min-h-screen bg-[#080808]/80 backdrop-blur-[1px] text-[#F5F2ED] py-20 sm:py-28 md:py-32 px-4 sm:px-6 lg:px-12 border-t border-[#222222]/80 overflow-hidden select-none flex flex-col justify-between"
     >
       {/* Scoped CSS for authentic brushed metal texture and vault lighting */}
       <style>{`

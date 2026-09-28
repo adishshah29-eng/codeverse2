@@ -84,7 +84,7 @@ export function TheMint() {
   return (
     <section
       id="mint"
-      className="relative w-full bg-[#000000] text-[#f3f4f6] py-16 sm:py-24 px-4 sm:px-6 lg:px-12 border-t border-[#1a1a1a] overflow-hidden select-none"
+      className="relative w-full bg-[#080808]/80 backdrop-blur-[1px] text-[#f3f4f6] py-16 sm:py-24 px-4 sm:px-6 lg:px-12 border-t border-[#1a1a1a]/80 overflow-hidden select-none"
     >
       {/* Scoped CSS Keyframes for Military Radar & Target HUD */}
       <style>{`

@@ -64,7 +64,7 @@ export function ProfessorsRules() {
   return (
     <section
       id="rules"
-      className="relative w-full bg-[#080808] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929]"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929]/80"
     >
       <div className="max-w-6xl mx-auto">
         {/* Header */}

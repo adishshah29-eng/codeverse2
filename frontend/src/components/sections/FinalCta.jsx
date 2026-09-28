@@ -33,7 +33,7 @@ export function FinalCta() {
   return (
     <section
       id="enter"
-      className="relative w-full bg-[#000000] text-[#f3f4f6] py-28 md:py-44 px-4 sm:px-6 lg:px-12 border-t border-[#1a1a1a] overflow-hidden text-center select-none"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#f3f4f6] py-28 md:py-44 px-4 sm:px-6 lg:px-12 border-t border-[#1a1a1a]/80 overflow-hidden text-center select-none"
     >
       {/* ================= BACKGROUND: DJSCE BUILDING BLACK & WHITE PHOTO ================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">

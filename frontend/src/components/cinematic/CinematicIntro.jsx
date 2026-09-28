@@ -161,7 +161,7 @@ export function CinematicIntro() {
   };
 
   return (
-    <div id="intro-hero" className="relative w-full bg-black text-[#f3f4f6]" style={{ height: "550vh" }}>
+    <div id="intro-hero" className="relative w-full bg-transparent text-[#f3f4f6]" style={{ height: "550vh" }}>
       {/* Top Glassmorphism Navigation */}
       <CinematicNavbar
         progress={isIntroCompleted ? 1 : smoothProgress}
@@ -175,7 +175,7 @@ export function CinematicIntro() {
       <div id="narrative-trigger-scene-3" className="absolute top-[380vh] h-[60vh] w-full pointer-events-none" />
 
       {/* Pinned Sticky Cinematic Viewport */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black flex items-center justify-center select-none pt-14 md:pt-16">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black/85 flex items-center justify-center select-none pt-14 md:pt-16">
         
         {/* Layer 1: Pixel Canvas */}
         {!isIntroCompleted && (

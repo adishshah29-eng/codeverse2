@@ -36,7 +36,7 @@ export function TheBriefing() {
   return (
     <section
       id="briefing"
-      className="relative w-full bg-[#080808] text-[#F5F2ED] pt-20 pb-28 md:pt-28 md:pb-36 px-6 lg:px-16 border-t border-[#292929] overflow-hidden"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] pt-20 pb-28 md:pt-28 md:pb-36 px-6 lg:px-16 border-t border-[#292929]/80 overflow-hidden"
     >
       {/* Background ambient lighting */}
       <div

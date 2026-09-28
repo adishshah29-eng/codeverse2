@@ -217,7 +217,7 @@ export function TheSchedule() {
     <section
       id="schedule"
       ref={sectionRef}
-      className="relative w-full bg-[#080808] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929] overflow-hidden"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929]/80 overflow-hidden"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 right-0 w-[550px] h-[550px] bg-[#E50914]/[0.035] rounded-full blur-[140px] pointer-events-none" />
