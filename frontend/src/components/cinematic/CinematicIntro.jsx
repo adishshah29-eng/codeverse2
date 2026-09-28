@@ -324,7 +324,7 @@ export function CinematicIntro() {
 
             {/* Big Glitch Logo */}
             <div
-              className={`absolute top-16 sm:top-20 md:top-24 lg:top-28 left-0 right-0 z-30 px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
+              className={`absolute top-[22vh] sm:top-20 md:top-24 lg:top-28 left-0 right-0 z-30 px-4 sm:px-6 text-center pointer-events-none transition-all duration-700 ease-out ${
                 isVideoTitleActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
               }`}
               style={{ opacity: videoTitleOpacity }}
@@ -334,7 +334,7 @@ export function CinematicIntro() {
                   speed={0.8}
                   enableShadows={true}
                   enableOnHover={false}
-                  className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-white whitespace-nowrap drop-shadow-[0_0_50px_rgba(200,16,46,0.8)]"
+                  className="font-heist text-3xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-white whitespace-nowrap drop-shadow-[0_0_50px_rgba(200,16,46,0.8)]"
                 >
                   CODEVERSE 2.0
                 </GlitchText>
