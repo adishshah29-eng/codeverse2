@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import CinematicIntro from "@/components/cinematic/CinematicIntro";
-import TheBriefing from "@/components/sections/TheBriefing";
 import ThePlan from "@/components/sections/ThePlan";
 import TheSchedule from "@/components/sections/TheSchedule";
 import TheLoot from "@/components/sections/TheLoot";
@@ -41,8 +40,7 @@ function App() {
         {/* Existing Landing Page - Preserved */}
         <CinematicIntro onNavbarVisibilityChange={setIsNavbarVisible} />
 
-        {/* Chapters 01 through 09 - The Heist Website */}
-        <TheBriefing />
+        {/* Chapters - The Heist Website */}
         <ThePlan />
         <TheSchedule />
         <TheLoot />

@@ -33,13 +33,6 @@ export function Footer() {
             <div className="grid grid-cols-2 gap-3 font-mono text-xs tracking-widest uppercase">
               <button
                 type="button"
-                onClick={() => scrollTo("briefing")}
-                className="text-left hover:text-white transition-colors cursor-pointer"
-              >
-                THE BRIEFING
-              </button>
-              <button
-                type="button"
                 onClick={() => scrollTo("plan")}
                 className="text-left hover:text-white transition-colors cursor-pointer"
               >

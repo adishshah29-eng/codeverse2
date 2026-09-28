@@ -351,16 +351,16 @@ export function CinematicIntro({ onNavbarVisibilityChange }) {
               </div>
             </div>
 
-            {/* Scroll down into briefing indicator */}
+            {/* Scroll down into plan indicator */}
             <div
               className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 text-center cursor-pointer group pointer-events-auto"
               onClick={() => {
-                document.getElementById("briefing")?.scrollIntoView({ behavior: "smooth" });
+                document.getElementById("plan")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               <div className="flex flex-col items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                 <span className="text-[11px] uppercase tracking-[0.3em] text-[#E50914] font-mono font-bold">
-                  SCROLL FOR THE BRIEFING ↓
+                  SCROLL FOR THE PLAN ↓
                 </span>
                 <div className="w-[1.5px] h-4 bg-[#E50914] animate-bounce" />
               </div>

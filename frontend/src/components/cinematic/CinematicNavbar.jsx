@@ -32,7 +32,7 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ["briefing", "plan", "schedule", "loot", "rules", "mint", "enter"];
+    const sectionIds = ["plan", "schedule", "loot", "rules", "mint", "enter"];
     const handleScroll = () => {
       const scrollPos = window.scrollY + 200;
       for (let i = sectionIds.length - 1; i >= 0; i--) {
@@ -76,21 +76,6 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
 
         {/* Desktop Navigation Links */}
         <div className="hidden lg:flex items-center space-x-6 xl:space-x-8 font-mono text-[11px] tracking-[0.2em] uppercase">
-          <button
-            type="button"
-            onClick={() => scrollTo("briefing")}
-            className={`relative py-1 transition-all duration-300 cursor-pointer ${
-              activeSection === "briefing"
-                ? "text-white font-bold"
-                : "text-[#A3A3A3] hover:text-white"
-            }`}
-          >
-            THE BRIEFING
-            {activeSection === "briefing" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E50914] rounded-full" />
-            )}
-          </button>
-
           <button
             type="button"
             onClick={() => scrollTo("plan")}
@@ -193,13 +178,6 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-black/95 border-b border-[#292929] px-6 py-6 font-mono text-xs tracking-widest uppercase space-y-4">
-          <button
-            type="button"
-            onClick={() => scrollTo("briefing")}
-            className="block w-full text-left py-2 text-[#A3A3A3] hover:text-white"
-          >
-            THE BRIEFING
-          </button>
           <button
             type="button"
             onClick={() => scrollTo("plan")}

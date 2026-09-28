@@ -31,7 +31,7 @@ export function AnimatedCounter({
   glowOnComplete = false,
 }) {
   const nodeRef = useRef(null);
-  const isInView = useInView(nodeRef, { once, margin: "-10% 0px -10% 0px" });
+  const isInView = useInView(nodeRef, { once, margin: "-4% 0px -4% 0px" });
 
   const formatNumber = (num) => {
     let formatted;
