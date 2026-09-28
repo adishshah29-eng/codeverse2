@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import VariableProximity from "@/components/ui/VariableProximity";
-import { BlurText, BlurFade } from "@/components/ui/BlurText";
+import { BlurText } from "@/components/ui/BlurText";
+import { Faq } from "./faq/Faq";
 
 const RULES = [
   {
@@ -55,11 +56,6 @@ const FAQS = [
 
 export function ProfessorsRules() {
   const rulesHeaderRef = useRef(null);
-  const [openFaq, setOpenFaq] = useState(null);
-
-  const toggleFaq = (idx) => {
-    setOpenFaq(openFaq === idx ? null : idx);
-  };
 
   return (
     <section
@@ -67,7 +63,7 @@ export function ProfessorsRules() {
       className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929]/80"
     >
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Header - Completely Preserved */}
         <div ref={rulesHeaderRef} className="mb-16 md:mb-24 relative">
           <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3">
             READ BEFORE YOU ENTER · PROTOCOLS
@@ -90,7 +86,7 @@ export function ProfessorsRules() {
           />
         </div>
 
-        {/* The 5 Non-Negotiable Rules */}
+        {/* The 5 Non-Negotiable Rules - Completely Preserved */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
           {RULES.map((rule, idx) => (
             <div
@@ -114,55 +110,8 @@ export function ProfessorsRules() {
           ))}
         </div>
 
-        {/* FAQ Accordion */}
-        <div className="max-w-3xl mx-auto pt-12 border-t border-[#292929]">
-          <div className="text-center mb-12">
-            <span className="font-mono text-xs tracking-[0.3em] uppercase text-[#E50914] font-semibold block mb-2">
-              CLARIFICATIONS
-            </span>
-            <h3 className="font-heist text-3xl sm:text-4xl text-white tracking-wider uppercase">
-              FREQUENTLY ASKED QUESTIONS
-            </h3>
-          </div>
-
-          <div className="divide-y divide-[#292929] border-y border-[#292929]">
-            {FAQS.map((faq, idx) => {
-              const isOpen = openFaq === idx;
-
-              return (
-                <div key={faq.q} className="group">
-                  <button
-                    type="button"
-                    onClick={() => toggleFaq(idx)}
-                    className="w-full py-6 flex items-center justify-between text-left gap-4 cursor-pointer"
-                  >
-                    <span className="font-mono text-sm sm:text-base text-[#F5F2ED] group-hover:text-[#E50914] transition-colors tracking-wide">
-                      {faq.q}
-                    </span>
-                    <span
-                      className={`font-mono text-xl text-[#E50914] transition-transform duration-300 shrink-0 ${
-                        isOpen ? "rotate-45" : "rotate-0"
-                      }`}
-                    >
-                      +
-                    </span>
-                  </button>
-
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      isOpen ? "max-h-40 pb-6 opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    <p className="font-sans text-sm sm:text-base text-[#A3A3A3] font-light leading-relaxed">
-                      {faq.a}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
+        {/* FAQ Accordion - Upgraded with Cinematic Vault Cracking Experience */}
+        <Faq faqs={FAQS} />
       </div>
     </section>
   );
