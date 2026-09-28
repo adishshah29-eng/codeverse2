@@ -10,8 +10,7 @@ import scheduleLaptopCode from "@/assets/images/schedule_laptop_code.jpg";
 import scheduleTrophy from "@/assets/images/schedule_trophy.jpg";
 
 // Precision Heist milestones with exact scroll activation thresholds.
-// When the red line reaches the node, that specific card unlocks and reveals.
-// Scrolling up reverses the line and conceals the cards.
+// Calibrated for both Desktop widescreen (1600 x 760) and Mobile vertical serpentine (380 x 920).
 const HEIST_EVENTS = [
   {
     num: "01",
@@ -19,12 +18,18 @@ const HEIST_EVENTS = [
     title: "CREW REGISTRATION WINDOW",
     desc: "Verification of crew credentials & hardware deployment at the security checkpoint.",
     img: scheduleIdBadge,
-    nodeLeft: "68.8%", // (1100, 90)
+    // Desktop layout
+    nodeLeft: "68.8%",
     nodeTop: "11.8%",
-    cardLeft: "72%",   // Top-Right sector
+    cardLeft: "72%",
     cardTop: "5%",
     maxWidth: "310px",
     imgPosition: "right",
+    // Mobile serpentine curve layout (380 x 920)
+    mobileNodeLeft: "71%",   // (270, 70)
+    mobileNodeTop: "7.6%",
+    mobileCardLeft: "5%",    // (19, 35) to the left of node
+    mobileCardTop: "3.8%",
     threshold: 0.05,
   },
   {
@@ -33,12 +38,18 @@ const HEIST_EVENTS = [
     title: "OPENING CEREMONY & RULES BRIEFING",
     desc: "The Professor's final broadcast. Decryption keys and challenge packets released.",
     img: daliMaskImg,
-    nodeLeft: "34.4%", // (550, 140)
+    // Desktop layout
+    nodeLeft: "34.4%",
     nodeTop: "18.4%",
-    cardLeft: "38%",   // Top-Center sector
+    cardLeft: "38%",
     cardTop: "5%",
     maxWidth: "310px",
     imgPosition: "right",
+    // Mobile serpentine curve layout
+    mobileNodeLeft: "23.7%", // (90, 200)
+    mobileNodeTop: "21.7%",
+    mobileCardLeft: "31%",   // (118, 165) to the right of node
+    mobileCardTop: "17.9%",
     threshold: 0.18,
   },
   {
@@ -47,13 +58,19 @@ const HEIST_EVENTS = [
     title: "PHASE 1 · INSIDE THE MINT",
     desc: "All 45 crews enter. Rapid development and tactical problem solving. Top 10 advance.",
     img: scheduleVaultWheel,
-    nodeLeft: "5.6%",  // (90, 260)
+    // Desktop layout
+    nodeLeft: "5.6%",
     nodeTop: "34.2%",
-    cardLeft: "9%",    // Far Middle-Left sector
+    cardLeft: "9%",
     cardTop: "27%",
     maxWidth: "315px",
     imgPosition: "left",
     isWheel: true,
+    // Mobile serpentine curve layout
+    mobileNodeLeft: "76.3%", // (290, 330)
+    mobileNodeTop: "35.9%",
+    mobileCardLeft: "5%",    // (19, 295) to the left of node
+    mobileCardTop: "32.1%",
     threshold: 0.35,
   },
   {
@@ -62,12 +79,18 @@ const HEIST_EVENTS = [
     title: "BREAK · RESET FOR THE NEXT PHASE",
     desc: "Recalibration, reconnaissance, and security lockdown before the escape phase begins.",
     img: scheduleBlueprintMap,
-    nodeLeft: "18.8%", // (300, 390)
+    // Desktop layout
+    nodeLeft: "18.8%",
     nodeTop: "51.3%",
-    cardLeft: "23%",   // Center-Left sector
+    cardLeft: "23%",
     cardTop: "39%",
     maxWidth: "310px",
     imgPosition: "left",
+    // Mobile serpentine curve layout
+    mobileNodeLeft: "21.1%", // (80, 460)
+    mobileNodeTop: "50%",
+    mobileCardLeft: "31%",   // (118, 425) to the right of node
+    mobileCardTop: "46.2%",
     threshold: 0.50,
   },
   {
@@ -76,12 +99,18 @@ const HEIST_EVENTS = [
     title: "PHASE 2 · THE ESCAPE",
     desc: "Top 10 crews hunt and solve under pressure. First to collect every hint walks out.",
     img: scheduleHoodedDali,
-    nodeLeft: "65.6%", // (1050, 440)
+    // Desktop layout
+    nodeLeft: "65.6%",
     nodeTop: "57.9%",
-    cardLeft: "69%",   // Middle-Right sector
+    cardLeft: "69%",
     cardTop: "44%",
     maxWidth: "310px",
     imgPosition: "left",
+    // Mobile serpentine curve layout
+    mobileNodeLeft: "78.9%", // (300, 590)
+    mobileNodeTop: "64.1%",
+    mobileCardLeft: "5%",    // (19, 555) to the left of node
+    mobileCardTop: "60.3%",
     threshold: 0.66,
   },
   {
@@ -90,12 +119,18 @@ const HEIST_EVENTS = [
     title: "FINAL SCORE EVALUATION",
     desc: "Verification of cryptographic proofs, code integrity, and hint acquisition logs.",
     img: scheduleLaptopCode,
-    nodeLeft: "28.1%", // (450, 590) - Elevated bottom row
+    // Desktop layout
+    nodeLeft: "28.1%",
     nodeTop: "77.6%",
-    cardLeft: "48%",   // Bottom-Center sector
+    cardLeft: "48%",
     cardTop: "66%",
     maxWidth: "315px",
     imgPosition: "left",
+    // Mobile serpentine curve layout
+    mobileNodeLeft: "23.7%", // (90, 720)
+    mobileNodeTop: "78.3%",
+    mobileCardLeft: "31%",   // (118, 685) to the right of node
+    mobileCardTop: "74.5%",
     threshold: 0.82,
   },
   {
@@ -104,19 +139,25 @@ const HEIST_EVENTS = [
     title: "PRIZE DISTRIBUTION",
     desc: "Vault distribution: trophies, cash loot awarded, and e-certificates released.",
     img: scheduleTrophy,
-    nodeLeft: "5%",    // (80, 590) Vault Endpoint
+    // Desktop layout
+    nodeLeft: "5%",
     nodeTop: "77.6%",
-    cardLeft: "12%",   // Far Bottom-Left sector
+    cardLeft: "12%",
     cardTop: "66%",
     maxWidth: "310px",
     imgPosition: "left",
     isVaultEndpoint: true,
+    // Mobile serpentine curve layout (Vault finish)
+    mobileNodeLeft: "71%",   // (270, 850)
+    mobileNodeTop: "92.4%",
+    mobileCardLeft: "5%",    // (19, 815)
+    mobileCardTop: "88.6%",
     threshold: 0.95,
   },
 ];
 
-// Fluid S-curve Bézier route connecting all 7 nodes with zero line-word overlap
-const HEIST_PATH_D = `
+// Desktop widescreen Bézier curve (1600 x 760)
+const DESKTOP_PATH_D = `
   M 1100 90
   C 920 140, 720 140, 550 140
   C 340 140, 140 180, 90 260
@@ -127,21 +168,27 @@ const HEIST_PATH_D = `
   C 320 590, 200 590, 80 590
 `;
 
+// Mobile Serpentine S-Curve (380 x 920) - Sweeps elegantly across the mobile screen!
+const MOBILE_PATH_D = `
+  M 270 70
+  C 270 140, 90 140, 90 200
+  C 90 270, 290 270, 290 330
+  C 290 400, 80 400, 80 460
+  C 80 530, 300 530, 300 590
+  C 300 660, 90 660, 90 720
+  C 90 790, 270 790, 270 850
+`;
+
 /**
- * Interactive Milestone Card Component
- * Strictly revealed ONLY when the red laser reaches the node.
- * Automatically reverses and conceals when scrolling back up.
+ * Desktop Milestone Card Component
  */
-function MilestoneCard({ event, smoothProgress }) {
+function DesktopMilestoneCard({ event, smoothProgress }) {
   const t = event.threshold;
 
-  // Reveal effect: completely subdued (opacity 0.06, scale 0.92, translateY 8px)
-  // until the laser reaches the node, then reveals smoothly to full focus.
   const opacity = useTransform(smoothProgress, [t - 0.03, t + 0.02], [0.06, 1]);
   const scale = useTransform(smoothProgress, [t - 0.03, t + 0.02], [0.92, 1]);
   const translateY = useTransform(smoothProgress, [t - 0.03, t + 0.02], [8, 0]);
 
-  // Node ignition: lights up exactly at contact
   const nodeGlow = useTransform(smoothProgress, [t - 0.02, t + 0.02], [0, 1]);
   const nodeScale = useTransform(smoothProgress, [t - 0.02, t + 0.02], [0.85, 1.15]);
 
@@ -165,7 +212,6 @@ function MilestoneCard({ event, smoothProgress }) {
           </motion.div>
         ) : (
           <motion.div style={{ scale: nodeScale }} className="relative flex items-center justify-center">
-            {/* Active pulsating beacon halo */}
             <motion.div
               style={{ opacity: nodeGlow }}
               className="absolute w-7 h-7 rounded-full bg-[#E50914]/30 border border-[#E50914]/70 shadow-[0_0_12px_#E50914] animate-ping"
@@ -180,7 +226,7 @@ function MilestoneCard({ event, smoothProgress }) {
         )}
       </div>
 
-      {/* HTML Milestone Card (Discovered when laser hits node, conceals on scroll up) */}
+      {/* HTML Milestone Card */}
       <motion.div
         style={{
           left: event.cardLeft,
@@ -193,7 +239,6 @@ function MilestoneCard({ event, smoothProgress }) {
         className="absolute z-30 pointer-events-auto"
       >
         <div className="flex items-start gap-2.5 px-3 py-2 rounded-sm bg-[#0e0e0e]/95 backdrop-blur-md border border-[#2b2b2b] hover:border-[#E50914]/50 transition-colors shadow-[0_6px_24px_rgba(0,0,0,0.85)]">
-          {/* Left image thumbnail */}
           {event.imgPosition === "left" && event.img && (
             <div
               className={`shrink-0 overflow-hidden border border-[#333] bg-[#111] shadow-md ${
@@ -209,9 +254,7 @@ function MilestoneCard({ event, smoothProgress }) {
             </div>
           )}
 
-          {/* Text details */}
           <div className="flex-1 min-w-0">
-            {/* Timestamp & Step */}
             <div className="flex items-center gap-1.5 leading-none mb-1">
               <span className="font-mono text-xs font-bold tracking-wider text-[#E50914] drop-shadow-[0_0_6px_rgba(229,9,20,0.4)]">
                 {event.num}
@@ -221,18 +264,15 @@ function MilestoneCard({ event, smoothProgress }) {
               </span>
             </div>
 
-            {/* Title */}
             <h3 className="font-heist text-xs lg:text-[13px] text-white tracking-wide uppercase font-bold leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
               {event.title}
             </h3>
 
-            {/* Description */}
             <p className="font-sans text-[10.5px] text-[#A8A8A8] font-light leading-relaxed mt-0.5 line-clamp-2">
               {event.desc}
             </p>
           </div>
 
-          {/* Right image thumbnail */}
           {event.imgPosition === "right" && event.img && (
             <div className="w-10 h-10 shrink-0 rounded-sm overflow-hidden border border-[#333] bg-[#111] shadow-md">
               <img
@@ -243,6 +283,100 @@ function MilestoneCard({ event, smoothProgress }) {
               />
             </div>
           )}
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
+/**
+ * Mobile Milestone Card Component:
+ * Perfectly placed along the Mobile Serpentine S-Curve with matching scroll-driven reveals.
+ */
+function MobileMilestoneCard({ event, smoothProgress }) {
+  const t = event.threshold;
+
+  const opacity = useTransform(smoothProgress, [t - 0.03, t + 0.02], [0.08, 1]);
+  const scale = useTransform(smoothProgress, [t - 0.03, t + 0.02], [0.92, 1]);
+  const translateY = useTransform(smoothProgress, [t - 0.03, t + 0.02], [6, 0]);
+
+  const nodeGlow = useTransform(smoothProgress, [t - 0.02, t + 0.02], [0, 1]);
+  const nodeScale = useTransform(smoothProgress, [t - 0.02, t + 0.02], [0.85, 1.15]);
+
+  return (
+    <>
+      {/* Node Dot / Vault Ring on mobile S-curve */}
+      <div
+        className="absolute z-20 pointer-events-none -translate-x-1/2 -translate-y-1/2"
+        style={{ left: event.mobileNodeLeft, top: event.mobileNodeTop }}
+      >
+        {event.isVaultEndpoint ? (
+          <motion.div
+            style={{ scale: nodeScale }}
+            className="relative w-9 h-9 rounded-full bg-black border-2 border-[#E50914] flex items-center justify-center shadow-[0_0_15px_#E50914]"
+          >
+            <div className="absolute inset-0.5 rounded-full border border-dashed border-[#E50914]/70 animate-[spin_8s_linear_infinite]" />
+            <motion.div
+              style={{ opacity: nodeGlow }}
+              className="w-2.5 h-2.5 rounded-full bg-[#E50914] shadow-[0_0_8px_#E50914]"
+            />
+          </motion.div>
+        ) : (
+          <motion.div style={{ scale: nodeScale }} className="relative flex items-center justify-center">
+            <motion.div
+              style={{ opacity: nodeGlow }}
+              className="absolute w-6 h-6 rounded-full bg-[#E50914]/30 border border-[#E50914]/70 shadow-[0_0_10px_#E50914] animate-ping"
+            />
+            <div className="w-3.5 h-3.5 rounded-full bg-black border-2 border-[#E50914] flex items-center justify-center shadow-[0_0_8px_#E50914]">
+              <motion.div
+                style={{ opacity: nodeGlow }}
+                className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#fff,0_0_8px_#E50914]"
+              />
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* HTML Card on Mobile - Placed on the open side of the curve */}
+      <motion.div
+        style={{
+          left: event.mobileCardLeft,
+          top: event.mobileCardTop,
+          maxWidth: "245px",
+          opacity,
+          scale,
+          y: translateY,
+        }}
+        className="absolute z-30 pointer-events-auto"
+      >
+        <div className="flex items-start gap-2 p-2 rounded-sm bg-[#0e0e0e]/95 backdrop-blur-md border border-[#2b2b2b] hover:border-[#E50914]/50 transition-colors shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+          {event.img && (
+            <div
+              className={`shrink-0 overflow-hidden border border-[#333] bg-[#111] shadow-md ${
+                event.isWheel ? "w-9 h-9 rounded-full border-[#E50914]/50" : "w-8 h-8 rounded-sm"
+              }`}
+            >
+              <img
+                src={event.img}
+                alt={event.title}
+                className="w-full h-full object-cover filter contrast-115 brightness-95"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 mb-0.5 leading-none">
+              <span className="font-mono text-[10px] font-bold text-[#E50914]">{event.num}</span>
+              <span className="font-mono text-[10px] font-semibold text-[#FF4D4D]">{event.time}</span>
+            </div>
+            <h4 className="font-heist text-[11px] text-white uppercase tracking-wider font-bold leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] line-clamp-2">
+              {event.title}
+            </h4>
+            <p className="font-sans text-[9.5px] text-[#A8A8A8] font-light leading-relaxed mt-0.5 line-clamp-2">
+              {event.desc}
+            </p>
+          </div>
         </div>
       </motion.div>
     </>
@@ -295,7 +429,7 @@ export function TheSchedule() {
         style={{ backgroundImage: `url(${daliMaskImg})` }}
       />
 
-      {/* ================= SECTION HEADER (EXACTLY AS REQUESTED) ================= */}
+      {/* ================= SECTION HEADER ================= */}
       <div className="text-center shrink-0 z-20 pt-1 pb-2">
         <span className="font-mono text-xs sm:text-sm text-[#E50914] tracking-widest uppercase block mb-1 font-semibold">
           09 OCTOBER · 10 HOURS
@@ -375,7 +509,7 @@ export function TheSchedule() {
 
           {/* Always-visible tactical route blueprint guide */}
           <path
-            d={HEIST_PATH_D}
+            d={DESKTOP_PATH_D}
             fill="none"
             stroke="#E50914"
             strokeWidth="2"
@@ -387,7 +521,7 @@ export function TheSchedule() {
 
           {/* Glowing diffuse red laser */}
           <motion.path
-            d={HEIST_PATH_D}
+            d={DESKTOP_PATH_D}
             fill="none"
             stroke="#E50914"
             strokeWidth="11"
@@ -400,7 +534,7 @@ export function TheSchedule() {
 
           {/* Focused sharp red laser line */}
           <motion.path
-            d={HEIST_PATH_D}
+            d={DESKTOP_PATH_D}
             fill="none"
             stroke="#E50914"
             strokeWidth="4"
@@ -411,7 +545,7 @@ export function TheSchedule() {
 
           {/* Intense white-hot filament center */}
           <motion.path
-            d={HEIST_PATH_D}
+            d={DESKTOP_PATH_D}
             fill="none"
             stroke="#FFF0F0"
             strokeWidth="1.5"
@@ -421,47 +555,115 @@ export function TheSchedule() {
           />
         </svg>
 
-        {/* HTML MILESTONES: Discovered when red line reaches the node, reversible on scroll up */}
+        {/* Desktop HTML MILESTONES */}
         {HEIST_EVENTS.map((event) => (
-          <MilestoneCard
-            key={`milestone-step-${event.num}`}
+          <DesktopMilestoneCard
+            key={`desktop-step-${event.num}`}
             event={event}
             smoothProgress={smoothProgress}
           />
         ))}
       </div>
 
-      {/* ================= MOBILE: SLEEK SINGLE-RAIL ROUTE ================= */}
-      <div className="block md:hidden max-w-lg mx-auto w-full px-2 py-4">
-        {HEIST_EVENTS.map((event) => (
-          <div
-            key={`mobile-step-${event.num}`}
-            className="relative pl-8 pr-1 py-3 border-l-2 border-[#E50914]/40"
-          >
-            <div className="absolute -left-[9px] top-5 w-4 h-4 rounded-full bg-black border border-[#E50914] flex items-center justify-center shadow-[0_0_10px_#E50914]">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#E50914]" />
-            </div>
+      {/* ================= MOBILE: SAME TO SAME SERPENTINE S-CURVE ROUTE ================= */}
+      <div
+        className="block md:hidden relative max-w-[390px] w-full mx-auto my-auto"
+        style={{ aspectRatio: "380 / 920" }}
+      >
+        {/* Floating Mini Banknote on Mobile Route */}
+        <motion.img
+          src={dollarBillImg}
+          alt="100 Dollar Bill"
+          className="absolute z-15 w-16 opacity-60 pointer-events-none filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]"
+          style={{
+            left: "48%",
+            top: "52%",
+            transform: "rotate(14deg)",
+          }}
+          animate={{
+            y: [-3, 3, -3],
+            rotate: [14, 10, 14],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 6,
+            ease: "easeInOut",
+          }}
+        />
 
-            <div className="flex items-start gap-2.5 p-2 rounded-sm bg-[#0e0e0e]/95 border border-[#222]">
-              {event.img && (
-                <div className="w-9 h-9 shrink-0 rounded-sm overflow-hidden border border-[#333]">
-                  <img src={event.img} alt={event.title} className="w-full h-full object-cover" />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="font-mono text-xs font-bold text-[#E50914]">{event.num}</span>
-                  <span className="font-mono text-xs font-semibold text-[#FF4D4D]">{event.time}</span>
-                </div>
-                <h4 className="font-heist text-xs text-white uppercase tracking-wider font-bold">
-                  {event.title}
-                </h4>
-                <p className="text-[10px] text-[#888] font-light leading-relaxed mt-0.5">
-                  {event.desc}
-                </p>
-              </div>
-            </div>
-          </div>
+        {/* Mobile SVG Serpentine S-Curve Laser */}
+        <svg
+          viewBox="0 0 380 920"
+          className="absolute inset-0 w-full h-full pointer-events-none z-10"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <filter id="mobileLaserGlow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="4" result="blur1" />
+              <feGaussianBlur stdDeviation="8" result="blur2" />
+              <feMerge>
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Blueprint dashed guide track */}
+          <path
+            d={MOBILE_PATH_D}
+            fill="none"
+            stroke="#E50914"
+            strokeWidth="2"
+            strokeOpacity="0.22"
+            strokeDasharray="4 4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Glowing diffuse laser beam */}
+          <motion.path
+            d={MOBILE_PATH_D}
+            fill="none"
+            stroke="#E50914"
+            strokeWidth="8"
+            strokeOpacity="0.45"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#mobileLaserGlow)"
+            style={{ pathLength }}
+          />
+
+          {/* Sharp red laser line */}
+          <motion.path
+            d={MOBILE_PATH_D}
+            fill="none"
+            stroke="#E50914"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ pathLength }}
+          />
+
+          {/* White-hot filament center */}
+          <motion.path
+            d={MOBILE_PATH_D}
+            fill="none"
+            stroke="#FFF0F0"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ pathLength }}
+          />
+        </svg>
+
+        {/* Mobile HTML Milestones along the Serpentine S-Curve */}
+        {HEIST_EVENTS.map((event) => (
+          <MobileMilestoneCard
+            key={`mobile-step-${event.num}`}
+            event={event}
+            smoothProgress={smoothProgress}
+          />
         ))}
       </div>
     </section>
