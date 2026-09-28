@@ -85,7 +85,7 @@ export function TheMint() {
   return (
     <section
       id="mint"
-      className="relative w-full bg-[#080808]/80 backdrop-blur-[1px] text-[#f3f4f6] py-16 sm:py-24 px-4 sm:px-6 lg:px-12 border-t border-[#1a1a1a]/80 overflow-hidden select-none"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-16 sm:py-24 px-4 sm:px-6 lg:px-12 border-t border-[#292929]/80 overflow-hidden select-none"
     >
       {/* Scoped CSS Keyframes for Military Radar & Target HUD */}
       <style>{`
@@ -122,9 +122,9 @@ export function TheMint() {
         }
       `}</style>
 
-      {/* Background Military Grid Pattern */}
+      {/* Background Subtle Red Military Grid Pattern */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-20"
+        className="absolute inset-0 pointer-events-none opacity-10"
         style={{
           backgroundImage:
             "linear-gradient(rgba(229, 9, 20, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(229, 9, 20, 0.08) 1px, transparent 1px)",

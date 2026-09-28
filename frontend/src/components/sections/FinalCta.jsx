@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import djsceBuildingBw from "@/assets/images/djsce_building_bw.png";
 import { MapPin, IndianRupee, Users, ArrowRight, Target } from "lucide-react";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurText, BlurFade } from "@/components/ui/BlurText";
@@ -34,38 +33,16 @@ export function FinalCta() {
   return (
     <section
       id="enter"
-      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#f3f4f6] py-28 md:py-44 px-4 sm:px-6 lg:px-12 border-t border-[#1a1a1a]/80 overflow-hidden text-center select-none"
+      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-28 md:py-44 px-4 sm:px-6 lg:px-12 border-t border-[#292929]/80 overflow-hidden text-center select-none"
     >
-      {/* ================= BACKGROUND: DJSCE BUILDING BLACK & WHITE PHOTO ================= */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <img
-          src={djsceBuildingBw}
-          alt="DJSCE Campus Building"
-          className="w-full h-full object-cover object-center grayscale contrast-125 brightness-[0.24] scale-105"
-        />
-
-        {/* Noir Vignettes & Fades blending into pure black */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-black/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black" />
-        <div
-          className="absolute inset-0"
-          style={{
-            boxShadow: "inset 0 0 160px 80px #000000",
-          }}
-        />
-
-        {/* Ambient Red Glow in Center */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-red-950/20 rounded-full blur-[160px]" />
-      </div>
-
-      {/* Subtle Tactical HUD Grid Lines */}
+      {/* Background ambient lighting matching all chapters */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-15 z-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(229, 9, 20, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(229, 9, 20, 0.08) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-red-950/20 rounded-full blur-[160px] pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-10 right-1/4 w-[500px] h-[300px] bg-[#E50914]/[0.035] rounded-full blur-[140px] pointer-events-none"
+        aria-hidden="true"
       />
 
       {/* ================= LEFT & RIGHT AMBIENT HUD LABELS ================= */}

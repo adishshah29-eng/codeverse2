@@ -4,12 +4,18 @@ import vaultClosedImg from "@/assets/images/vault_closed_hd.png";
 import vaultOpenImg from "@/assets/images/vault_open_hd.png";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
+let lastSoundTime = 0;
+
 /**
  * Synthesizes a realistic mechanical bank vault lock & bolt sound via Web Audio API.
- * Works seamlessly without downloading external audio files.
+ * Works seamlessly without downloading external audio files, throttled to prevent spam.
  */
 function playVaultSound(isOpenAction) {
   try {
+    const nowMs = Date.now();
+    if (nowMs - lastSoundTime < 220) return;
+    lastSoundTime = nowMs;
+
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
@@ -53,28 +59,50 @@ function playVaultSound(isOpenAction) {
  * InteractiveVault
  * 
  * Renders an authentic heavy steel safe vault:
+ * - Opens smoothly on HOVER or click
  * - Closed state with combinations, lock wheels, bolts
- * - Smooth 3D mechanical door swing when clicked
+ * - Smooth 3D mechanical door swing revealing prize loot inside
  * - Inside chamber fitted with cash bundles, prize pool details, perks, and badges
- * - Middle vault (Rank 1) is scaled up, positioned forward in the layout hierarchy
+ * - Pure Heist red & crimson theme matching the website
  */
 export function InteractiveVault({
   rank = "01",
-  title = "1ST PRIZE",
-  amount = "₹25,000",
-  perk = "+ THE WINNER’S TROPHY",
+  title = "1ST PRIZE · THE MASTERMIND",
+  amount = "₹12,000",
+  perk = "+ WINNER’S TROPHY & DALI MASK",
   targetLabel = "PRIMARY TARGET",
-  statusLabel = "SECURED VAULT 01",
-  accentColor = "#C9A227",
+  statusLabel = "THE PROFESSOR'S CUT",
+  accentColor = "#E50914",
   isMiddle = false,
   isOpen = false,
   onToggle,
+  onHover,
+  onLeave,
   showUsb = true,
 }) {
+  const [isHovered, setIsHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleClick = () => {
-    playVaultSound(!isOpen);
+  // Vault is open if hovered OR clicked open
+  const effectiveOpen = isHovered || isOpen;
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    playVaultSound(true);
+    onHover?.();
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (!isOpen) {
+      playVaultSound(false);
+    }
+    onLeave?.();
+  };
+
+  const handleClick = (e) => {
+    e?.stopPropagation?.();
+    playVaultSound(!effectiveOpen);
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 900);
     if (onToggle) onToggle();
@@ -82,6 +110,8 @@ export function InteractiveVault({
 
   return (
     <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className={`relative flex flex-col items-center select-none transition-all duration-700 ${
         isMiddle
           ? "z-20 md:-translate-y-4 lg:-translate-y-6 scale-100 sm:scale-105 lg:scale-110"
@@ -92,9 +122,9 @@ export function InteractiveVault({
       <div className="text-center mb-3">
         <p
           className="font-mono text-[11px] sm:text-xs tracking-[0.25em] font-bold uppercase transition-colors duration-300"
-          style={{ color: isOpen ? accentColor : isMiddle ? "#E50914" : "#A3A3A3" }}
+          style={{ color: effectiveOpen ? "#E50914" : isMiddle ? "#E50914" : "#A3A3A3" }}
         >
-          {isOpen ? `ACCESSED VAULT ${rank}` : `${targetLabel} - ${statusLabel}`}
+          {effectiveOpen ? `ACCESSED · VAULT ${rank}` : `${targetLabel} - ${statusLabel}`}
         </p>
       </div>
 
@@ -102,25 +132,25 @@ export function InteractiveVault({
       <div
         onClick={handleClick}
         className={`relative cursor-pointer group rounded-sm transition-all duration-500 ${
-          isMiddle && isOpen
-            ? "shadow-[0_0_50px_rgba(201,162,39,0.35)]"
-            : isOpen
-            ? "shadow-[0_0_35px_rgba(229,9,20,0.25)]"
-            : "hover:shadow-[0_0_25px_rgba(255,255,255,0.08)]"
+          isMiddle && effectiveOpen
+            ? "shadow-[0_0_55px_rgba(229,9,20,0.5)]"
+            : effectiveOpen
+            ? "shadow-[0_0_40px_rgba(229,9,20,0.35)]"
+            : "hover:shadow-[0_0_25px_rgba(229,9,20,0.2)]"
         }`}
         style={{
           width: "100%",
           maxWidth: isMiddle ? "380px" : "330px",
-          aspectRatio: isOpen ? "284 / 214" : "206 / 214",
+          aspectRatio: effectiveOpen ? "284 / 214" : "206 / 214",
         }}
-        title={`Click to ${isOpen ? "seal" : "open"} Vault ${rank}`}
+        title={`Hover or click to open Vault ${rank}`}
       >
         {/* ========================================================= */}
         {/* BASE LAYER: OPEN VAULT CHAMBER (Revealed when open)     */}
         {/* ========================================================= */}
         <div
           className={`absolute inset-0 transition-opacity duration-600 ${
-            isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            effectiveOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
         >
           {/* Base Open Vault Graphic */}
@@ -130,13 +160,11 @@ export function InteractiveVault({
             className="w-full h-full object-contain pointer-events-none drop-shadow-2xl"
           />
 
-          {/* Ambient Warm Glow inside chamber */}
+          {/* Ambient Crimson Glow inside chamber */}
           <div
             className="absolute top-[18%] left-[16%] w-[48%] h-[50%] rounded-full blur-[24px] pointer-events-none transition-opacity duration-700"
             style={{
-              backgroundColor: isMiddle
-                ? "rgba(201, 162, 39, 0.25)"
-                : "rgba(229, 9, 20, 0.2)",
+              backgroundColor: "rgba(229, 9, 20, 0.28)",
             }}
           />
 
@@ -144,29 +172,25 @@ export function InteractiveVault({
           <div className="absolute top-[14%] left-[14%] w-[46%] h-[50%] flex flex-col justify-center items-center text-center p-1.5 z-10">
             {/* Rank Tag */}
             <span
-              className="font-mono text-[9px] sm:text-[10px] tracking-[0.22em] font-extrabold uppercase px-2 py-0.5 border rounded-xs mb-1"
-              style={{
-                color: accentColor,
-                borderColor: `${accentColor}55`,
-                backgroundColor: `${accentColor}18`,
-              }}
+              className="font-mono text-[9px] sm:text-[10px] tracking-[0.22em] font-extrabold uppercase px-2 py-0.5 border rounded-xs mb-1 text-white border-[#E50914]/60 bg-[#E50914]/20 shadow-[0_0_10px_rgba(229,9,20,0.3)]"
             >
               {title}
             </span>
 
             {/* Cash Prize Typography */}
             <div
-              className="font-heist text-xl sm:text-2xl lg:text-3xl tracking-wide font-black leading-tight drop-shadow-[0_0_12px_rgba(0,0,0,0.9)]"
+              className="font-heist text-xl sm:text-2xl lg:text-3xl tracking-wide font-black leading-tight drop-shadow-[0_0_12px_rgba(0,0,0,0.9)] text-white"
               style={{
-                color: isMiddle ? "#F5F2ED" : "#FFFFFF",
-                textShadow: isMiddle ? "0 0 16px rgba(201,162,39,0.7)" : "0 0 14px rgba(229,9,20,0.6)",
+                textShadow: "0 0 16px rgba(229,9,20,0.8), 0 0 32px rgba(229,9,20,0.4)",
               }}
             >
-              {isOpen ? (
+              {effectiveOpen ? (
                 <AnimatedCounter
+                  from={0}
                   value={parseInt(amount.replace(/[^0-9]/g, ""), 10) || 0}
                   prefix="₹"
                   duration={1.2}
+                  glowOnComplete={true}
                 />
               ) : (
                 amount
@@ -174,7 +198,7 @@ export function InteractiveVault({
             </div>
 
             {/* Perk / Trophy */}
-            <span className="font-mono text-[8px] sm:text-[9px] tracking-wider text-neutral-300 font-semibold uppercase mt-1 leading-tight line-clamp-1">
+            <span className="font-mono text-[8px] sm:text-[9px] tracking-wider text-[#F5F2ED] font-semibold uppercase mt-1 leading-tight line-clamp-1">
               {perk}
             </span>
           </div>
@@ -185,7 +209,7 @@ export function InteractiveVault({
         {/* ========================================================= */}
         <div
           className={`absolute inset-0 transition-all duration-800 ease-out origin-right ${
-            isOpen
+            effectiveOpen
               ? "opacity-0 pointer-events-none [transform:perspective(1200px)_rotateY(-78deg)_scale(0.92)]"
               : "opacity-100 pointer-events-auto [transform:perspective(1200px)_rotateY(0deg)_scale(1)]"
           }`}
@@ -201,8 +225,8 @@ export function InteractiveVault({
           />
 
           {/* Interactive Wheel Hover Dial Indicator */}
-          <div className="absolute top-[48%] left-[48%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/10 group-hover:border-[#E50914]/50 pointer-events-none transition-all duration-300 flex items-center justify-center">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#E50914] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_10px_#E50914]" />
+          <div className="absolute top-[48%] left-[48%] -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/10 group-hover:border-[#E50914]/60 pointer-events-none transition-all duration-300 flex items-center justify-center">
+            <span className="w-2 h-2 rounded-full bg-[#E50914] opacity-40 group-hover:opacity-100 group-hover:scale-125 transition-all duration-300 shadow-[0_0_12px_#E50914]" />
           </div>
         </div>
 
@@ -218,20 +242,21 @@ export function InteractiveVault({
       {/* Bottom Footer Label */}
       <div className="text-center mt-3">
         <p className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-[#A3A3A3] uppercase">
-          {isOpen ? `VAULT ${rank}: CONTENTS REVEALED` : `VAULT ${rank}: SECURE STORAGE`}
+          {effectiveOpen ? `VAULT ${rank}: CONTENTS UNLOCKED` : `VAULT ${rank}: SECURE STORAGE`}
         </p>
 
-        {/* Click to open / close hint button */}
+        {/* Hover / Click to unlock hint button */}
         <button
+          type="button"
           onClick={handleClick}
-          className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-1 bg-[#121212] border border-[#2a2a2a] hover:border-[#E50914] text-neutral-400 hover:text-white transition-all cursor-pointer rounded-xs"
+          className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.2em] uppercase px-2.5 py-1 bg-[#121212] border border-[#2a2a2a] hover:border-[#E50914] text-neutral-300 hover:text-white transition-all cursor-pointer rounded-xs"
         >
-          {isOpen ? (
+          {effectiveOpen ? (
             <Lock className="w-3 h-3 text-[#E50914]" />
           ) : (
-            <Unlock className="w-3 h-3" style={{ color: accentColor }} />
+            <Unlock className="w-3 h-3 text-[#E50914]" />
           )}
-          <span>{isOpen ? "SEAL VAULT" : "CLICK TO UNLOCK"}</span>
+          <span>{effectiveOpen ? "SEAL VAULT" : "HOVER TO UNLOCK"}</span>
         </button>
       </div>
     </div>
