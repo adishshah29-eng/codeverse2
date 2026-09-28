@@ -1,449 +1,471 @@
-import React, { useState, useEffect, useRef } from "react";
-import hangingMoneyImg from "../../assets/images/hanging_money_vignette.png";
-import AnimatedCounter from "@/components/ui/AnimatedCounter";
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "motion/react";
+import daliMaskImg from "@/assets/images/dali_mask.jpg";
+import dollarBillImg from "@/assets/images/dollar_bill.png";
+import scheduleIdBadge from "@/assets/images/schedule_id_badge.jpg";
+import scheduleVaultWheel from "@/assets/images/schedule_vault_wheel.jpg";
+import scheduleBlueprintMap from "@/assets/images/schedule_blueprint_map.jpg";
+import scheduleHoodedDali from "@/assets/images/schedule_hooded_dali.jpg";
+import scheduleLaptopCode from "@/assets/images/schedule_laptop_code.jpg";
+import scheduleTrophy from "@/assets/images/schedule_trophy.jpg";
 
-const TIMELINE = [
+// Precision Heist milestones with exact scroll activation thresholds.
+// When the red line reaches the node, that specific card unlocks and reveals.
+// Scrolling up reverses the line and conceals the cards.
+const HEIST_EVENTS = [
   {
-    start: "08:00",
-    end: "09:00",
-    title: "Crew Registration Window",
-    desc: "Verification of crew credentials and hardware deployment at the security checkpoint.",
-    isPhase: false,
+    num: "01",
+    time: "08:00 – 09:00",
+    title: "CREW REGISTRATION WINDOW",
+    desc: "Verification of crew credentials & hardware deployment at the security checkpoint.",
+    img: scheduleIdBadge,
+    nodeLeft: "68.8%", // (1100, 90)
+    nodeTop: "11.8%",
+    cardLeft: "72%",   // Top-Right sector
+    cardTop: "5%",
+    maxWidth: "310px",
+    imgPosition: "right",
+    threshold: 0.05,
   },
   {
-    start: "09:00",
-    end: "09:30",
-    title: "Opening Ceremony & Rules Briefing",
+    num: "02",
+    time: "09:00 – 09:30",
+    title: "OPENING CEREMONY & RULES BRIEFING",
     desc: "The Professor's final broadcast. Decryption keys and challenge packets released.",
-    isPhase: false,
+    img: daliMaskImg,
+    nodeLeft: "34.4%", // (550, 140)
+    nodeTop: "18.4%",
+    cardLeft: "38%",   // Top-Center sector
+    cardTop: "5%",
+    maxWidth: "310px",
+    imgPosition: "right",
+    threshold: 0.18,
   },
   {
-    start: "10:00",
-    end: "13:30",
+    num: "03",
+    time: "10:00 – 13:30",
     title: "PHASE 1 · INSIDE THE MINT",
     desc: "All 45 crews enter. Rapid development and tactical problem solving. Top 10 advance.",
-    isPhase: true,
+    img: scheduleVaultWheel,
+    nodeLeft: "5.6%",  // (90, 260)
+    nodeTop: "34.2%",
+    cardLeft: "9%",    // Far Middle-Left sector
+    cardTop: "27%",
+    maxWidth: "315px",
+    imgPosition: "left",
+    isWheel: true,
+    threshold: 0.35,
   },
   {
-    start: "13:30",
-    end: "14:30",
-    title: "Break · Reset for the Next Phase",
+    num: "04",
+    time: "13:30 – 14:30",
+    title: "BREAK · RESET FOR THE NEXT PHASE",
     desc: "Recalibration, reconnaissance, and security lockdown before the escape phase begins.",
-    isPhase: false,
+    img: scheduleBlueprintMap,
+    nodeLeft: "18.8%", // (300, 390)
+    nodeTop: "51.3%",
+    cardLeft: "23%",   // Center-Left sector
+    cardTop: "39%",
+    maxWidth: "310px",
+    imgPosition: "left",
+    threshold: 0.50,
   },
   {
-    start: "14:30",
-    end: "16:30",
+    num: "05",
+    time: "14:30 – 16:30",
     title: "PHASE 2 · THE ESCAPE",
     desc: "Top 10 crews hunt and solve under pressure. First to collect every hint walks out.",
-    isPhase: true,
+    img: scheduleHoodedDali,
+    nodeLeft: "65.6%", // (1050, 440)
+    nodeTop: "57.9%",
+    cardLeft: "69%",   // Middle-Right sector
+    cardTop: "44%",
+    maxWidth: "310px",
+    imgPosition: "left",
+    threshold: 0.66,
   },
   {
-    start: "16:30",
-    end: "17:15",
-    title: "Final Score Evaluation",
+    num: "06",
+    time: "16:30 – 17:15",
+    title: "FINAL SCORE EVALUATION",
     desc: "Verification of cryptographic proofs, code integrity, and hint acquisition logs.",
-    isPhase: false,
+    img: scheduleLaptopCode,
+    nodeLeft: "28.1%", // (450, 590) - Elevated bottom row
+    nodeTop: "77.6%",
+    cardLeft: "48%",   // Bottom-Center sector
+    cardTop: "66%",
+    maxWidth: "315px",
+    imgPosition: "left",
+    threshold: 0.82,
   },
   {
-    start: "17:15",
-    end: "18:00",
-    title: "Prize Distribution",
+    num: "07",
+    time: "17:15 – 18:00",
+    title: "PRIZE DISTRIBUTION",
     desc: "Vault distribution: trophies, cash loot awarded, and e-certificates released.",
-    isPhase: false,
+    img: scheduleTrophy,
+    nodeLeft: "5%",    // (80, 590) Vault Endpoint
+    nodeTop: "77.6%",
+    cardLeft: "12%",   // Far Bottom-Left sector
+    cardTop: "66%",
+    maxWidth: "310px",
+    imgPosition: "left",
+    isVaultEndpoint: true,
+    threshold: 0.95,
   },
 ];
 
+// Fluid S-curve Bézier route connecting all 7 nodes with zero line-word overlap
+const HEIST_PATH_D = `
+  M 1100 90
+  C 920 140, 720 140, 550 140
+  C 340 140, 140 180, 90 260
+  C 50 340, 160 390, 300 390
+  C 500 390, 820 410, 1050 440
+  C 1240 470, 1240 540, 1050 570
+  C 850 590, 620 590, 450 590
+  C 320 590, 200 590, 80 590
+`;
+
+/**
+ * Interactive Milestone Card Component
+ * Strictly revealed ONLY when the red laser reaches the node.
+ * Automatically reverses and conceals when scrolling back up.
+ */
+function MilestoneCard({ event, smoothProgress }) {
+  const t = event.threshold;
+
+  // Reveal effect: completely subdued (opacity 0.06, scale 0.92, translateY 8px)
+  // until the laser reaches the node, then reveals smoothly to full focus.
+  const opacity = useTransform(smoothProgress, [t - 0.03, t + 0.02], [0.06, 1]);
+  const scale = useTransform(smoothProgress, [t - 0.03, t + 0.02], [0.92, 1]);
+  const translateY = useTransform(smoothProgress, [t - 0.03, t + 0.02], [8, 0]);
+
+  // Node ignition: lights up exactly at contact
+  const nodeGlow = useTransform(smoothProgress, [t - 0.02, t + 0.02], [0, 1]);
+  const nodeScale = useTransform(smoothProgress, [t - 0.02, t + 0.02], [0.85, 1.15]);
+
+  return (
+    <>
+      {/* Node Dot / Vault Ring */}
+      <div
+        className="absolute z-20 pointer-events-none -translate-x-1/2 -translate-y-1/2"
+        style={{ left: event.nodeLeft, top: event.nodeTop }}
+      >
+        {event.isVaultEndpoint ? (
+          <motion.div
+            style={{ scale: nodeScale }}
+            className="relative w-11 h-11 lg:w-13 lg:h-13 rounded-full bg-black border-2 border-[#E50914] flex items-center justify-center shadow-[0_0_20px_#E50914]"
+          >
+            <div className="absolute inset-1 rounded-full border border-dashed border-[#E50914]/70 animate-[spin_8s_linear_infinite]" />
+            <motion.div
+              style={{ opacity: nodeGlow }}
+              className="w-3.5 h-3.5 rounded-full bg-[#E50914] shadow-[0_0_12px_#E50914]"
+            />
+          </motion.div>
+        ) : (
+          <motion.div style={{ scale: nodeScale }} className="relative flex items-center justify-center">
+            {/* Active pulsating beacon halo */}
+            <motion.div
+              style={{ opacity: nodeGlow }}
+              className="absolute w-7 h-7 rounded-full bg-[#E50914]/30 border border-[#E50914]/70 shadow-[0_0_12px_#E50914] animate-ping"
+            />
+            <div className="w-4 h-4 rounded-full bg-black border-2 border-[#E50914] flex items-center justify-center shadow-[0_0_8px_#E50914]">
+              <motion.div
+                style={{ opacity: nodeGlow }}
+                className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#fff,0_0_8px_#E50914]"
+              />
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* HTML Milestone Card (Discovered when laser hits node, conceals on scroll up) */}
+      <motion.div
+        style={{
+          left: event.cardLeft,
+          top: event.cardTop,
+          maxWidth: event.maxWidth,
+          opacity,
+          scale,
+          y: translateY,
+        }}
+        className="absolute z-30 pointer-events-auto"
+      >
+        <div className="flex items-start gap-2.5 px-3 py-2 rounded-sm bg-[#0e0e0e]/95 backdrop-blur-md border border-[#2b2b2b] hover:border-[#E50914]/50 transition-colors shadow-[0_6px_24px_rgba(0,0,0,0.85)]">
+          {/* Left image thumbnail */}
+          {event.imgPosition === "left" && event.img && (
+            <div
+              className={`shrink-0 overflow-hidden border border-[#333] bg-[#111] shadow-md ${
+                event.isWheel ? "w-11 h-11 rounded-full border-[#E50914]/50" : "w-10 h-10 rounded-sm"
+              }`}
+            >
+              <img
+                src={event.img}
+                alt={event.title}
+                className="w-full h-full object-cover filter contrast-115 brightness-95"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          {/* Text details */}
+          <div className="flex-1 min-w-0">
+            {/* Timestamp & Step */}
+            <div className="flex items-center gap-1.5 leading-none mb-1">
+              <span className="font-mono text-xs font-bold tracking-wider text-[#E50914] drop-shadow-[0_0_6px_rgba(229,9,20,0.4)]">
+                {event.num}
+              </span>
+              <span className="font-mono text-xs font-semibold tracking-wider text-[#FF5555]">
+                {event.time}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3 className="font-heist text-xs lg:text-[13px] text-white tracking-wide uppercase font-bold leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              {event.title}
+            </h3>
+
+            {/* Description */}
+            <p className="font-sans text-[10.5px] text-[#A8A8A8] font-light leading-relaxed mt-0.5 line-clamp-2">
+              {event.desc}
+            </p>
+          </div>
+
+          {/* Right image thumbnail */}
+          {event.imgPosition === "right" && event.img && (
+            <div className="w-10 h-10 shrink-0 rounded-sm overflow-hidden border border-[#333] bg-[#111] shadow-md">
+              <img
+                src={event.img}
+                alt={event.title}
+                className="w-full h-full object-cover filter contrast-115 brightness-95"
+                loading="lazy"
+              />
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
 export function TheSchedule() {
-  const [activeSlotIdx, setActiveSlotIdx] = useState(-1);
-  const [visibleIndices, setVisibleIndices] = useState(new Set());
-  const [sectionEntered, setSectionEntered] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const containerRef = useRef(null);
 
-  const sectionRef = useRef(null);
-  const timelineRef = useRef(null);
-  const itemRefs = useRef([]);
+  // Scroll tracking across the Schedule section (smooth 0 to 1 during section traverse)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 65%", "end 50%"],
+  });
 
-  // Check if today is 9 Oct 2026 and compute active slot
-  useEffect(() => {
-    const checkNow = () => {
-      const now = new Date();
-      const isEventDay =
-        now.getFullYear() === 2026 &&
-        now.getMonth() === 9 && // October (0-indexed: 9)
-        now.getDate() === 9;
+  // Spring physics for responsive, buttery-smooth scroll wheel tracking
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 85,
+    damping: 22,
+    mass: 0.45,
+    restDelta: 0.0002,
+  });
 
-      if (!isEventDay) {
-        setActiveSlotIdx(-1);
-        return;
-      }
-
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      const idx = TIMELINE.findIndex((slot) => {
-        const [sh, sm] = slot.start.split(":").map(Number);
-        const [eh, em] = slot.end.split(":").map(Number);
-        const startMin = sh * 60 + sm;
-        const endMin = eh * 60 + em;
-        return currentMinutes >= startMin && currentMinutes < endMin;
-      });
-
-      setActiveSlotIdx(idx);
-    };
-
-    checkNow();
-    const interval = setInterval(checkNow, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // IntersectionObserver for staggered operational reveals
-  useEffect(() => {
-    const sectionEl = sectionRef.current;
-    if (!sectionEl) return;
-
-    // Observe whole section to trigger money entrance
-    const sectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setSectionEntered(true);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    sectionObserver.observe(sectionEl);
-
-    // Observe each schedule event item
-    const itemObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number(entry.target.dataset.index);
-            setVisibleIndices((prev) => {
-              const updated = new Set(prev);
-              updated.add(idx);
-              return updated;
-            });
-          }
-        });
-      },
-      { threshold: 0.25, rootMargin: "0px 0px -40px 0px" }
-    );
-
-    itemRefs.current.forEach((el) => {
-      if (el) itemObserver.observe(el);
-    });
-
-    // Subtle scroll listener for parallax line and money descent
-    const handleScroll = () => {
-      if (!sectionEl) return;
-      const rect = sectionEl.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      if (rect.top <= windowHeight && rect.bottom >= 0) {
-        const totalDist = rect.height + windowHeight;
-        const currentDist = windowHeight - rect.top;
-        const progress = Math.min(Math.max(currentDist / totalDist, 0), 1);
-        setScrollProgress(progress);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => {
-      sectionObserver.disconnect();
-      itemObserver.disconnect();
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // Generate iCalendar (.ics) file
-  const downloadIcs = () => {
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//CodeVerse//The Heist//EN",
-      "CALSCALE:GREGORIAN",
-      "METHOD:PUBLISH",
-      "BEGIN:VEVENT",
-      "UID:codeverse-2026-heist@djsce",
-      "DTSTAMP:20260927T000000Z",
-      "DTSTART:20261009T023000Z", // 08:00 IST in UTC (02:30 UTC)
-      "DTEND:20261009T123000Z",   // 18:00 IST in UTC (12:30 UTC)
-      "SUMMARY:CodeVerse 2.0 · The Heist",
-      "DESCRIPTION:CodeVerse 2.0 Money Heist Themed Hackathon at DJSCE Mumbai. 10 hours. Teams of 3.",
-      "LOCATION:Dwarkadas J. Sanghvi College of Engineering, Vile Parle (W), Mumbai",
-      "STATUS:CONFIRMED",
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
-
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "CodeVerse-2.0-The-Heist.ics";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
-  const openGoogleCalendar = () => {
-    const title = encodeURIComponent("CodeVerse 2.0 · The Heist");
-    const details = encodeURIComponent(
-      "CodeVerse 2.0 Money Heist Themed Hackathon at DJSCE Mumbai. 10 hours. Teams of 3. ₹25,000 prize pool."
-    );
-    const location = encodeURIComponent(
-      "Dwarkadas J. Sanghvi College of Engineering, Vile Parle (West), Mumbai"
-    );
-    const dates = "20261009T023000Z/20261009T123000Z";
-    window.open(
-      `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`,
-      "_blank"
-    );
-  };
-
-  // Compute how far down the timeline active line has filled (percentage based on highest visible index)
-  const maxVisible = Math.max(-1, ...Array.from(visibleIndices));
-  const timelineFillPct =
-    maxVisible >= 0 ? Math.min(100, Math.round(((maxVisible + 0.6) / TIMELINE.length) * 100)) : 0;
-
-  // Very subtle parallax vertical descent (max 18px)
-  const moneyYOffset = Math.round(scrollProgress * 22);
+  // Path length: laser progressively draws directly with scroll (0 to 1)
+  const pathLength = useTransform(smoothProgress, [0.03, 0.95], [0, 1]);
 
   return (
     <section
       id="schedule"
-      ref={sectionRef}
-      className="relative w-full bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] py-28 md:py-36 px-6 lg:px-16 border-t border-[#292929]/80 overflow-hidden"
+      ref={containerRef}
+      className="relative w-full min-h-screen bg-[#080808]/75 backdrop-blur-[1px] text-[#F5F2ED] border-t border-[#292929]/80 py-6 sm:py-10 px-2 sm:px-6 overflow-hidden select-none flex flex-col justify-between items-center"
     >
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 right-0 w-[550px] h-[550px] bg-[#E50914]/[0.035] rounded-full blur-[140px] pointer-events-none" />
+      {/* Background Subtle Red Military Grid Pattern (identical to TheMint and other pages) */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-10"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(229, 9, 20, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(229, 9, 20, 0.08) 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+        }}
+      />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 md:mb-20">
-          <div>
-            <p className="font-mono text-xs sm:text-sm tracking-[0.3em] uppercase text-[#E50914] font-semibold mb-3 flex items-center gap-1.5">
-              <AnimatedCounter value={9} padDigits={2} />
-              <span>OCTOBER ·</span>
-              <AnimatedCounter value={10} />
-              <span>HOURS</span>
-            </p>
-            <h2 className="font-heist text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wider text-[#F5F2ED] uppercase">
-              THE SCHEDULE
-            </h2>
-            <p className="font-sans text-lg sm:text-xl text-[#A3A3A3] mt-3 font-light">
-              Crews of 3. Be through the door on time.
-            </p>
-          </div>
+      {/* Ambient Crimson Vignettes (identical to ThePlan and TheLoot) */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-red-950/20 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[500px] h-[300px] bg-[#E50914]/[0.035] rounded-full blur-[140px] pointer-events-none" />
 
-          {/* Calendar Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={downloadIcs}
-              className="px-5 py-2.5 bg-[#171717] hover:bg-[#222222] border border-[#292929] hover:border-[#E50914]/60 text-xs font-mono tracking-widest uppercase text-[#F5F2ED] transition-all cursor-pointer shadow-sm active:translate-y-px"
-            >
-              ADD TO CALENDAR
-            </button>
-            <button
-              type="button"
-              onClick={openGoogleCalendar}
-              className="px-5 py-2.5 bg-[#E50914] hover:bg-[#FF1A1A] text-white text-xs font-mono tracking-widest uppercase font-bold transition-all shadow-[0_0_20px_rgba(229,9,20,0.3)] hover:shadow-[0_0_30px_rgba(229,9,20,0.5)] cursor-pointer active:translate-y-px"
-            >
-              GOOGLE CALENDAR →
-            </button>
-          </div>
-        </div>
+      {/* Subtle Dalí Silhouette Watermark in bottom corner */}
+      <div
+        className="absolute bottom-2 right-2 w-72 h-72 lg:w-96 lg:h-96 opacity-[0.06] pointer-events-none bg-contain bg-no-repeat bg-right-bottom filter contrast-150"
+        style={{ backgroundImage: `url(${daliMaskImg})` }}
+      />
 
-        {/* Mobile Hanging Money Banner (< lg viewports) */}
-        <div className="lg:hidden relative w-full mb-12 flex justify-center items-center py-4 overflow-visible">
-          {/* Thread coming from top */}
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-[1.5px] h-14 bg-gradient-to-b from-transparent via-[#E50914]/80 to-[#E50914] pointer-events-none" />
+      {/* ================= SECTION HEADER (EXACTLY AS REQUESTED) ================= */}
+      <div className="text-center shrink-0 z-20 pt-1 pb-2">
+        <span className="font-mono text-xs sm:text-sm text-[#E50914] tracking-widest uppercase block mb-1 font-semibold">
+          09 OCTOBER · 10 HOURS
+        </span>
+        <h2 className="font-heist text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-wider uppercase leading-none mb-1">
+          THE SCHEDULE
+        </h2>
+        <p className="font-mono text-xs sm:text-sm text-[#888888] tracking-wide">
+          Crews of 3. Be through the door on time.
+        </p>
+      </div>
 
-          {/* Money bundle container with gentle sway */}
+      {/* ================= DESKTOP & TABLET: SCROLL-DRIVEN HEIST ROUTE ================= */}
+      <div
+        className="hidden md:block relative w-full max-w-[1450px] my-auto"
+        style={{ aspectRatio: "1600 / 760" }}
+      >
+        {/* Floating Banknotes along the route */}
+        <motion.img
+          src={dollarBillImg}
+          alt="100 Dollar Bill"
+          className="absolute z-15 w-24 lg:w-28 opacity-65 pointer-events-none filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]"
+          style={{
+            left: "40%",
+            top: "14%",
+            transform: "rotate(-12deg)",
+          }}
+          animate={{
+            y: [-3, 4, -3],
+            rotate: [-12, -9, -12],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 6,
+            ease: "easeInOut",
+          }}
+        />
+
+        <motion.img
+          src={dollarBillImg}
+          alt="100 Dollar Bill"
+          className="absolute z-15 w-20 lg:w-24 opacity-55 pointer-events-none filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]"
+          style={{
+            left: "58%",
+            top: "65%",
+            transform: "rotate(15deg)",
+          }}
+          animate={{
+            y: [4, -4, 4],
+            rotate: [15, 11, 15],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 7,
+            ease: "easeInOut",
+            delay: 0.8,
+          }}
+        />
+
+        {/* SVG LASER ROUTE CANVAS */}
+        <svg
+          viewBox="0 0 1600 760"
+          className="absolute inset-0 w-full h-full pointer-events-none z-10"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <filter id="heistLaserGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="5" result="blur1" />
+              <feGaussianBlur stdDeviation="13" result="blur2" />
+              <feMerge>
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Always-visible tactical route blueprint guide */}
+          <path
+            d={HEIST_PATH_D}
+            fill="none"
+            stroke="#E50914"
+            strokeWidth="2"
+            strokeOpacity="0.22"
+            strokeDasharray="6 6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Glowing diffuse red laser */}
+          <motion.path
+            d={HEIST_PATH_D}
+            fill="none"
+            stroke="#E50914"
+            strokeWidth="11"
+            strokeOpacity="0.45"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#heistLaserGlow)"
+            style={{ pathLength }}
+          />
+
+          {/* Focused sharp red laser line */}
+          <motion.path
+            d={HEIST_PATH_D}
+            fill="none"
+            stroke="#E50914"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ pathLength }}
+          />
+
+          {/* Intense white-hot filament center */}
+          <motion.path
+            d={HEIST_PATH_D}
+            fill="none"
+            stroke="#FFF0F0"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ pathLength }}
+          />
+        </svg>
+
+        {/* HTML MILESTONES: Discovered when red line reaches the node, reversible on scroll up */}
+        {HEIST_EVENTS.map((event) => (
+          <MilestoneCard
+            key={`milestone-step-${event.num}`}
+            event={event}
+            smoothProgress={smoothProgress}
+          />
+        ))}
+      </div>
+
+      {/* ================= MOBILE: SLEEK SINGLE-RAIL ROUTE ================= */}
+      <div className="block md:hidden max-w-lg mx-auto w-full px-2 py-4">
+        {HEIST_EVENTS.map((event) => (
           <div
-            className="relative w-44 sm:w-52 h-64 sm:h-72 pointer-events-none select-none animate-hanging-sway"
-            style={{
-              transition: "opacity 1.2s ease-out, transform 1s cubic-bezier(0.16, 1, 0.3, 1)",
-              opacity: sectionEntered ? 1 : 0,
-            }}
+            key={`mobile-step-${event.num}`}
+            className="relative pl-8 pr-1 py-3 border-l-2 border-[#E50914]/40"
           >
-            {/* Ambient red halo */}
-            <div className="absolute inset-0 bg-radial from-[#E50914]/20 via-[#E50914]/5 to-transparent rounded-full blur-2xl pointer-events-none" />
-            <img
-              src={hangingMoneyImg}
-              alt="Suspended Heist Loot"
-              className="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(229,9,20,0.35)]"
-              loading="lazy"
-            />
-          </div>
-        </div>
+            <div className="absolute -left-[9px] top-5 w-4 h-4 rounded-full bg-black border border-[#E50914] flex items-center justify-center shadow-[0_0_10px_#E50914]">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E50914]" />
+            </div>
 
-        {/* Desktop 2-Column Grid: Timeline (Left) + Hanging Money (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-start">
-          {/* LEFT COLUMN: Operational Timeline (7 cols) */}
-          <div className="lg:col-span-7 xl:col-span-7">
-            <div
-              ref={timelineRef}
-              className="relative border-l border-[#292929] ml-3 sm:ml-6 md:ml-8 space-y-12 sm:space-y-14"
-            >
-              {/* Dynamic Animated Red Progress Line */}
-              <div
-                className="absolute left-[-1px] top-0 w-[2px] bg-gradient-to-b from-[#E50914] via-[#E50914] to-[#FF1A1A] transition-all duration-700 ease-out pointer-events-none"
-                style={{
-                  height: `${timelineFillPct}%`,
-                  boxShadow: "0 0 8px rgba(229, 9, 20, 0.7)",
-                }}
-              />
-
-              {TIMELINE.map((slot, index) => {
-                const isNow = activeSlotIdx === index;
-                const isVisible = visibleIndices.has(index);
-                const isPastOrActive = maxVisible >= index;
-
-                return (
-                  <div
-                    key={slot.start}
-                    ref={(el) => (itemRefs.current[index] = el)}
-                    data-index={index}
-                    className={`relative pl-8 sm:pl-12 group transition-all duration-500 ${
-                      isVisible
-                        ? "opacity-100"
-                        : "opacity-40"
-                    }`}
-                  >
-                    {/* Node dot on timeline line */}
-                    <div
-                      className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full border transition-all duration-500 ${
-                        isNow
-                          ? "bg-[#E50914] border-white scale-125 shadow-[0_0_14px_#E50914]"
-                          : isPastOrActive
-                          ? "bg-[#E50914] border-[#FF4D4D] shadow-[0_0_8px_rgba(229,9,20,0.6)]"
-                          : slot.isPhase
-                          ? "bg-[#1f1f1f] border-[#E50914]"
-                          : "bg-[#080808] border-[#555555] group-hover:border-[#E50914]"
-                      }`}
-                    />
-
-                    <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-2">
-                      {/* Timestamp range: fades and slides in first */}
-                      <div
-                        className={`flex items-center gap-3 shrink-0 transition-all duration-500 ${
-                          isVisible
-                            ? "opacity-100 translate-x-0"
-                            : "opacity-0 -translate-x-3"
-                        }`}
-                        style={{
-                          transitionDelay: `${Math.min(index * 40, 200)}ms`,
-                        }}
-                      >
-                        <span
-                          className={`font-mono text-sm sm:text-base tracking-widest font-semibold transition-colors duration-300 ${
-                            isNow || (isPastOrActive && slot.isPhase)
-                              ? "text-[#E50914]"
-                              : isPastOrActive
-                              ? "text-[#F5F2ED]"
-                              : "text-[#888888]"
-                          }`}
-                        >
-                          {slot.start} – {slot.end}
-                        </span>
-
-                        {/* LIVE NOW badge on event day */}
-                        {isNow && (
-                          <span className="px-2 py-0.5 rounded-sm bg-[#E50914] text-white font-mono text-[9px] font-bold tracking-widest uppercase animate-pulse shadow-[0_0_10px_#E50914]">
-                            NOW
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Slot Title: reveals shortly after */}
-                      <h3
-                        className={`font-heist text-xl sm:text-2xl tracking-wide uppercase transition-all duration-600 ${
-                          isVisible
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-2"
-                        } ${
-                          slot.isPhase
-                            ? "text-white drop-shadow-[0_2px_15px_rgba(255,255,255,0.15)]"
-                            : "text-[#F5F2ED] group-hover:text-white"
-                        }`}
-                        style={{
-                          transitionDelay: `${Math.min(index * 40 + 60, 260)}ms`,
-                        }}
-                      >
-                        {slot.title}
-                      </h3>
-                    </div>
-
-                    {/* Slot Description: reveals last */}
-                    <p
-                      className={`text-xs sm:text-sm text-[#A3A3A3] font-light max-w-xl leading-relaxed transition-all duration-700 ${
-                        isVisible
-                          ? "opacity-100 translate-y-0"
-                          : "opacity-0 translate-y-2"
-                      }`}
-                      style={{
-                        transitionDelay: `${Math.min(index * 40 + 120, 320)}ms`,
-                      }}
-                    >
-                      {slot.desc}
-                    </p>
-                  </div>
-                );
-              })}
+            <div className="flex items-start gap-2.5 p-2 rounded-sm bg-[#0e0e0e]/95 border border-[#222]">
+              {event.img && (
+                <div className="w-9 h-9 shrink-0 rounded-sm overflow-hidden border border-[#333]">
+                  <img src={event.img} alt={event.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="font-mono text-xs font-bold text-[#E50914]">{event.num}</span>
+                  <span className="font-mono text-xs font-semibold text-[#FF4D4D]">{event.time}</span>
+                </div>
+                <h4 className="font-heist text-xs text-white uppercase tracking-wider font-bold">
+                  {event.title}
+                </h4>
+                <p className="text-[10px] text-[#888] font-light leading-relaxed mt-0.5">
+                  {event.desc}
+                </p>
+              </div>
             </div>
           </div>
-
-          {/* RIGHT COLUMN: Cinematic Hanging Money Visual (5 cols) */}
-          <div className="hidden lg:flex lg:col-span-5 xl:col-span-5 flex-col items-center justify-start sticky top-24 xl:top-28 pointer-events-none select-none">
-            {/* The continuous hanging thread extending from above the section */}
-            <div
-              className="absolute -top-36 xl:-top-44 left-1/2 -translate-x-1/2 w-[1.5px] h-36 xl:h-44 bg-gradient-to-b from-transparent via-[#E50914]/70 to-[#E50914] animate-thread-glow pointer-events-none"
-              style={{
-                boxShadow: "0 0 6px rgba(229, 9, 20, 0.6)",
-              }}
-            />
-
-            {/* Suspended Money Prop Container with subtle sway & scroll descent */}
-            <div
-              className="relative w-full max-w-[340px] xl:max-w-[380px] h-[520px] xl:h-[580px] flex items-center justify-center animate-hanging-sway"
-              style={{
-                transform: `translate3d(0, ${moneyYOffset}px, 0)`,
-                transition: "opacity 1.4s ease-out, transform 0.3s ease-out",
-                opacity: sectionEntered ? 1 : 0,
-              }}
-            >
-              {/* Deep Red Atmospheric Glow behind the Money */}
-              <div
-                className="absolute inset-0 rounded-full pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(circle at 50% 55%, rgba(229, 9, 20, 0.16) 0%, rgba(229, 9, 20, 0.05) 45%, transparent 75%)",
-                  filter: "blur(30px)",
-                }}
-              />
-
-              {/* The Hanging Money Image (Feathered edges, organic blend, no border) */}
-              <img
-                src={hangingMoneyImg}
-                alt="Hanging Money Bundle"
-                className="relative z-10 w-full h-full object-contain filter drop-shadow-[0_15px_35px_rgba(229,9,20,0.3)]"
-                loading="lazy"
-                draggable={false}
-              />
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );
 }
 
 export default TheSchedule;
-
