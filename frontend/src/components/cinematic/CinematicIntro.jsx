@@ -6,17 +6,22 @@ import GlitchText from "./GlitchText";
 import { useSharedTypewriterAudio } from "@/hooks/useSharedTypewriterAudio";
 import moneyHeistVideo from "@/assets/videos/moneyheistvd.mp4";
 
-export function CinematicIntro() {
-  const [smoothProgress, setSmoothProgress] = useState(0);
-  const [isIntroCompleted, setIsIntroCompleted] = useState(false);
+export function CinematicIntro({ onNavbarVisibilityChange }) {
+  const initialRatio = useRef(
+    typeof window !== "undefined" && window.innerHeight > 0
+      ? Math.max(0, Math.min(1, (window.pageYOffset || document.documentElement.scrollTop || 0) / (window.innerHeight * 4.5)))
+      : 0
+  );
+  const [smoothProgress, setSmoothProgress] = useState(initialRatio.current);
+  const [isIntroCompleted, setIsIntroCompleted] = useState(initialRatio.current >= 0.86);
   const [reducedMotion, setReducedMotion] = useState(false);
   const { isMuted, toggleMute } = useSharedTypewriterAudio();
 
   const videoRef = useRef(null);
-  const targetProgress = useRef(0);
-  const maxProgress = useRef(0);
+  const targetProgress = useRef(initialRatio.current);
+  const maxProgress = useRef(initialRatio.current);
   const rafId = useRef(null);
-  const completedRef = useRef(false);
+  const completedRef = useRef(initialRatio.current >= 0.86);
 
   // Check prefers-reduced-motion
   useEffect(() => {
@@ -53,7 +58,7 @@ export function CinematicIntro() {
     handleScroll();
 
     // Silky smooth dampening lerp
-    let current = 0;
+    let current = initialRatio.current;
     const lerpLoop = () => {
       current += (targetProgress.current - current) * 0.075;
       if (Math.abs(targetProgress.current - current) < 0.0003) {
@@ -143,6 +148,11 @@ export function CinematicIntro() {
   // Navbar is visible when the video is revealed or intro completed
   const isNavbarVisible = isIntroCompleted || smoothProgress >= 0.86;
 
+  // Inform parent when navbar and main page become visible
+  useEffect(() => {
+    onNavbarVisibilityChange?.(isNavbarVisible);
+  }, [isNavbarVisible, onNavbarVisibilityChange]);
+
   // Big Glitch Title: visible when the video is revealed or intro completed
   const isVideoTitleActive = isIntroCompleted || smoothProgress >= 0.86;
   const videoTitleOpacity = isIntroCompleted
@@ -199,7 +209,7 @@ export function CinematicIntro() {
           <>
             {/* SCENE 1 SUBTITLES (The Professor) */}
             <div
-              className={`absolute bottom-12 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
+              className={`absolute bottom-28 sm:bottom-24 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
                 isScene1Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
               }`}
               style={{ opacity: isScene1Active ? scene1Opacity : 0 }}
@@ -238,7 +248,7 @@ export function CinematicIntro() {
 
             {/* SCENE 2 SUBTITLES (Three Crew Members) */}
             <div
-              className={`absolute bottom-12 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
+              className={`absolute bottom-28 sm:bottom-24 md:bottom-20 left-0 right-0 z-20 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-700 ease-out ${
                 isScene2Active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
               }`}
               style={{ opacity: isScene2Active ? scene2Opacity : 0 }}

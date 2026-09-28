@@ -14,19 +14,12 @@ const TARGET_VOLUME = 0.38;
  * - Tactical HUD styling with live animated audio equalizer bars
  * - Saves user sound preference to localStorage
  */
-export function GlobalBackgroundAudio() {
-  const [isPlaying, setIsPlaying] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved !== null ? JSON.parse(saved) : true;
-    } catch {
-      return true;
-    }
-  });
-
-  const [hasInteracted, setHasInteracted] = useState(false);
+export function GlobalBackgroundAudio({ isVisible = false }) {
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
   const fadeIntervalRef = useRef(null);
+  const isVisibleRef = useRef(isVisible);
+  isVisibleRef.current = isVisible;
 
   // Smooth volume fader
   const fadeIn = useCallback((audio) => {
@@ -56,7 +49,6 @@ export function GlobalBackgroundAudio() {
           setIsPlaying(true);
         })
         .catch(() => {
-          // Autoplay was prevented by browser policy; wait for first user interaction
           setIsPlaying(false);
         });
     }
@@ -70,11 +62,19 @@ export function GlobalBackgroundAudio() {
     setIsPlaying(false);
   }, []);
 
-  // Handle initial play and user interaction unlock listener
+  // Handle initial play and visibility transitions based on navbar / main page state
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
+    if (!isVisible) {
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+      audio.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    // When navbar and main page start:
     audio.volume = TARGET_VOLUME;
 
     // Check saved preference
@@ -89,7 +89,7 @@ export function GlobalBackgroundAudio() {
     }
 
     if (preferredState) {
-      // Attempt autoplay
+      audio.loop = true;
       const promise = audio.play();
       if (promise !== undefined) {
         promise
@@ -98,14 +98,14 @@ export function GlobalBackgroundAudio() {
             setIsPlaying(true);
           })
           .catch(() => {
-            // Autoplay blocked by browser policy: attach one-time unlock listener
+            // Autoplay blocked by browser policy: attach unlock listener
             const unlockHandler = () => {
-              // Only play if still preferred
+              if (!isVisibleRef.current) return;
               try {
                 const s = localStorage.getItem(STORAGE_KEY);
                 if (s !== null && !JSON.parse(s)) return;
               } catch {}
-              
+
               audio.play().then(() => {
                 fadeIn(audio);
                 setIsPlaying(true);
@@ -135,11 +135,10 @@ export function GlobalBackgroundAudio() {
     return () => {
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
-  }, [fadeIn]);
+  }, [isVisible, fadeIn]);
 
   // Toggle audio ON / OFF
   const toggleAudio = () => {
-    setHasInteracted(true);
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -194,8 +193,14 @@ export function GlobalBackgroundAudio() {
         .animate-heist-eq-4 { animation: heistEq4 0.7s ease-in-out infinite 0.2s; }
       `}</style>
 
-      {/* Floating Tactical Audio Controller in Left Corner */}
-      <div className="fixed bottom-6 left-6 z-50 select-none">
+      {/* Floating Tactical Audio Controller in Left Corner - Appears when navbar / main page starts */}
+      <div
+        className={`fixed bottom-6 left-4 sm:left-6 z-50 select-none transition-all duration-700 ease-out ${
+          isVisible
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+      >
         <button
           type="button"
           onClick={toggleAudio}

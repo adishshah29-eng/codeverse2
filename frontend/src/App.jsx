@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import CinematicIntro from "@/components/cinematic/CinematicIntro";
 import TheBriefing from "@/components/sections/TheBriefing";
 import ThePlan from "@/components/sections/ThePlan";
@@ -13,6 +13,8 @@ import GlobalBackgroundAudio from "@/components/cinematic/GlobalBackgroundAudio"
 import heistBg from "@/assets/images/heist_bg.png";
 
 function App() {
+  const [isNavbarVisible, setIsNavbarVisible] = useState(false);
+
   return (
     <main className="relative w-full min-h-screen text-[#F5F2ED] selection:bg-[#E50914] selection:text-white">
       {/* Global Fixed Heist Board Background - Unobstructed scrolling & non-interactive layer */}
@@ -29,15 +31,15 @@ function App() {
         <div className="absolute inset-0 bg-black/35 pointer-events-none" />
       </div>
 
-      {/* Global Background Audio Controller - Persistent in left corner */}
+      {/* Global Background Audio Controller - Appears when navbar main page starts */}
       <div className="relative z-50">
-        <GlobalBackgroundAudio />
+        <GlobalBackgroundAudio isVisible={isNavbarVisible} />
       </div>
 
       {/* Website Sections & Chapters */}
       <div className="relative z-10 w-full">
         {/* Existing Landing Page - Preserved */}
-        <CinematicIntro />
+        <CinematicIntro onNavbarVisibilityChange={setIsNavbarVisible} />
 
         {/* Chapters 01 through 09 - The Heist Website */}
         <TheBriefing />
