@@ -1,5 +1,9 @@
 // Registration status & countdown logic for CodeVerse 2.0
 
+export const UNSTOP_URL =
+  "https://unstop.com/o/Yf7SJ8Z?lb=Hw0IrtQX&utm_medium=Share&utm_source=hackathons&utm_campaign=Adishsha93847";
+export const REGISTRATION_FEE = 149;
+
 export function getRegistrationStatus() {
   const now = new Date();
   const regOpen = new Date("2026-09-29T00:00:00");
@@ -46,7 +50,7 @@ export function getRegistrationStatus() {
       buttonText: "JOIN THE CREW ON UNSTOP →",
       buttonDisabled: false,
       canRegister: true,
-      unstopUrl: "https://unstop.com",
+      unstopUrl: UNSTOP_URL,
     };
   }
 
