@@ -249,4 +249,21 @@
   text-shadow: 0 0 25px rgba(229, 9, 20, 0.8), 0 0 50px rgba(229, 9, 20, 0.4);
 }
 
-
+
+
+/* Footer crew-credits marquee */
+@keyframes crewMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.crew-marquee-track {
+  animation: crewMarquee 40s linear infinite;
+}
+.crew-marquee:hover .crew-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .crew-marquee-track {
+    animation: none;
+  }
+}

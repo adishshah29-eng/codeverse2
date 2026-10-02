@@ -1,6 +1,22 @@
 import React from "react";
 import { useSharedTypewriterAudio } from "@/hooks/useSharedTypewriterAudio";
 
+const CONTRIBUTORS = [
+  "Adish Shah",
+  "Aarya",
+  "Saad",
+  "Yug",
+  "Ashutosh",
+  "Bhavya Chawda",
+  "Husein",
+  "Pradnya Bhamre",
+  "Pratham Vithalani",
+  "Riya Duddalwar",
+  "Riya Vora",
+  "Shivansh Vyas",
+  "Vicky",
+];
+
 export function Footer() {
   const { isMuted, toggleMute } = useSharedTypewriterAudio();
 
@@ -118,6 +134,33 @@ export function Footer() {
             </button>
           </div>
 
+        </div>
+
+        {/* Crew credits marquee */}
+        <div className="crew-marquee border-t border-[#292929] pt-8 -mb-4 overflow-hidden">
+          <p className="font-mono text-[10px] text-[#E50914] tracking-[0.3em] uppercase font-bold text-center mb-3">
+            THE CREW BEHIND THE HEIST
+          </p>
+          <div
+            className="overflow-hidden"
+            style={{
+              maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+            }}
+          >
+            <ul className="crew-marquee-track flex w-max font-mono text-xs tracking-[0.25em] uppercase text-[#F5F2ED]">
+              {[...CONTRIBUTORS, ...CONTRIBUTORS].map((name, i) => (
+                <li
+                  key={`${name}-${i}`}
+                  aria-hidden={i >= CONTRIBUTORS.length}
+                  className="flex items-center whitespace-nowrap"
+                >
+                  <span>{name}</span>
+                  <span className="mx-6 text-[#E50914]">&#9670;</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Disclaimer & Copyright */}
