@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CinematicIntro from "@/components/cinematic/CinematicIntro";
 import ThePlan from "@/components/sections/ThePlan";
+import TheAbout from "@/components/sections/TheAbout";
 import TheSchedule from "@/components/sections/TheSchedule";
 import TheLoot from "@/components/sections/TheLoot";
 import CrewIdGenerator from "@/components/sections/CrewIdGenerator";
@@ -42,6 +43,7 @@ function App() {
 
         {/* Chapters - The Heist Website */}
         <ThePlan />
+        <TheAbout />
         <TheSchedule />
         <TheLoot />
         <CrewIdGenerator />

@@ -9,6 +9,7 @@ import React, { useState, useEffect } from "react";
  * - Navigation links connected to:
  *   - The Briefing (#briefing)
  *   - The Plan (#plan)
+ *   - About (#about)
  *   - Schedule (#schedule)
  *   - The Loot (#loot)
  *   - Rules (#rules)
@@ -32,7 +33,7 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
 
   // Track active section via IntersectionObserver
   useEffect(() => {
-    const sectionIds = ["plan", "schedule", "loot", "rules", "mint", "enter"];
+    const sectionIds = ["plan", "about", "schedule", "loot", "rules", "mint", "enter"];
     const handleScroll = () => {
       const scrollPos = window.scrollY + 200;
       for (let i = sectionIds.length - 1; i >= 0; i--) {
@@ -87,6 +88,21 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
           >
             THE PLAN
             {activeSection === "plan" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E50914] rounded-full" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => scrollTo("about")}
+            className={`relative py-1 transition-all duration-300 cursor-pointer ${
+              activeSection === "about"
+                ? "text-white font-bold"
+                : "text-[#A3A3A3] hover:text-white"
+            }`}
+          >
+            ABOUT
+            {activeSection === "about" && (
               <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E50914] rounded-full" />
             )}
           </button>
@@ -184,6 +200,13 @@ export function CinematicNavbar({ progress = 0, visible, isIntroCompleted = fals
             className="block w-full text-left py-2 text-[#A3A3A3] hover:text-white"
           >
             THE PLAN
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollTo("about")}
+            className="block w-full text-left py-2 text-[#A3A3A3] hover:text-white"
+          >
+            ABOUT
           </button>
           <button
             type="button"
