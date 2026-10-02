@@ -60,7 +60,7 @@ export function Footer() {
                 RULES
               </button>
               <a
-                href="https://instagram.com/djscodeai"
+                href="https://instagram.com/djs_codeai"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-left text-[#E50914] hover:text-[#FF1A1A] transition-colors"
@@ -75,25 +75,30 @@ export function Footer() {
             <span className="text-[#E50914] tracking-[0.25em] uppercase font-bold block mb-4">
               QUESTIONS?
             </span>
-            <p className="text-white font-medium">Adish Shah</p>
-            <p className="text-[#A3A3A3]">+91 98194 86535</p>
-            <div className="flex items-center gap-4 pt-2">
+            {[
+              { name: "Meet Dawda", phone: "+91 80078 52752", wa: "918007852752" },
+              { name: "Juee Shimpi", phone: "+91 89751 36588", wa: "918975136588" },
+            ].map((contact) => (
+              <div key={contact.wa} className="pb-1">
+                <p className="text-white font-medium">{contact.name}</p>
+                <a
+                  href={`https://wa.me/${contact.wa}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#A3A3A3] hover:text-[#E50914] transition-colors"
+                >
+                  {contact.phone} · WhatsApp
+                </a>
+              </div>
+            ))}
+            <div className="pt-2">
               <a
-                href="https://wa.me/919819486535"
+                href="https://instagram.com/djs_codeai"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#F5F2ED] hover:text-[#E50914] transition-colors underline underline-offset-4"
               >
-                WhatsApp
-              </a>
-              <span className="text-[#292929]">/</span>
-              <a
-                href="https://instagram.com/djscodeai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#F5F2ED] hover:text-[#E50914] transition-colors underline underline-offset-4"
-              >
-                @djscodeai
+                @djs_codeai
               </a>
             </div>
           </div>

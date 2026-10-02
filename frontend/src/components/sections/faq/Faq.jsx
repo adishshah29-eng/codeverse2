@@ -24,7 +24,7 @@ if (typeof window !== "undefined") {
 const DEFAULT_FAQS = [
   {
     q: "How do I register?",
-    a: "Registration runs on Unstop from 29 September to 6 October. Hit Join the crew, form your team of three there and you're in.",
+    a: "Registration runs on Unstop from 29 September to 6 October. Hit Join the crew, form your crew of two or three there and you're in.",
   },
   {
     q: "How many crews can enter?",
@@ -32,7 +32,7 @@ const DEFAULT_FAQS = [
   },
   {
     q: "Is there a registration fee?",
-    a: "Yes. The registration fee is ₹99.",
+    a: "Yes. The registration fee is ₹149 per team, paid on Unstop.",
   },
   {
     q: "Where does the heist happen?",
@@ -41,6 +41,13 @@ const DEFAULT_FAQS = [
   {
     q: "Can beginners join?",
     a: "Yes. The event is open to everyone, whatever your college, branch or experience.",
+  },  {
+    q: "Who is running the heist?",
+    a: "DJS Code AI, the AI & ML club of DJSCE, in collaboration with Unstop. It happens at the AIML Department, DJSCE.",
+  },
+  {
+    q: "Who do I contact with questions?",
+    a: "Meet Dawda (+91 80078 52752) or Juee Shimpi (+91 89751 36588).",
   },
 ];
 

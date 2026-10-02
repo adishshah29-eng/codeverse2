@@ -6,35 +6,50 @@ import { Faq } from "./faq/Faq";
 const RULES = [
   {
     num: "01",
-    title: "THREE TO A CREW.",
-    desc: "Nobody goes in alone, and nobody brings a fourth.",
+    title: "TWO OR THREE TO A CREW.",
+    desc: "Teams of 2–3 members. Each participant joins one crew only.",
   },
   {
     num: "02",
-    title: "FORTY-FIVE CREWS GET IN.",
-    desc: "Registration runs 29 September to 6 October on Unstop.",
+    title: "TWO PHASES.",
+    desc: "The Royal Mint and The Escape. Only shortlisted crews are informed in advance.",
   },
   {
     num: "03",
-    title: "NO ONE GETS HURT.",
-    desc: "Original work only. No plagiarism.",
+    title: "BEAT THE CLOCK.",
+    desc: "Complete all challenges within the given time.",
   },
   {
     num: "04",
-    title: "BRING YOUR OWN TOOLS.",
-    desc: "Laptop, laptop charger, college ID.",
+    title: "FAIR PLAY.",
+    desc: "Work independently and use only permitted resources. Sharing answers or work is prohibited.",
   },
   {
     num: "05",
-    title: "OPEN TO EVERYONE.",
-    desc: "Any college, any branch, any level.",
+    title: "EVERY POINT COUNTS.",
+    desc: "Points for completed challenges. Ties may be broken on time or tie-breakers.",
+  },
+  {
+    num: "06",
+    title: "REPORT TECH ISSUES.",
+    desc: "Flag problems immediately. Organisers decide on any extra time.",
+  },
+  {
+    num: "07",
+    title: "NO DIRTY TRICKS.",
+    desc: "Cheating, tampering, unauthorised access or unfair practices may lead to disqualification.",
+  },
+  {
+    num: "08",
+    title: "THE PROFESSOR DECIDES.",
+    desc: "Organisers may modify rules, timings or challenges. Their decision is final.",
   },
 ];
 
 const FAQS = [
   {
     q: "How do I register?",
-    a: "Registration runs on Unstop from 29 September to 6 October. Hit Join the crew, form your team of three there and you're in.",
+    a: "Registration runs on Unstop from 29 September to 6 October. Hit Join the crew, form your crew of two or three there and you're in.",
   },
   {
     q: "How many crews can enter?",
@@ -42,7 +57,7 @@ const FAQS = [
   },
   {
     q: "Is there a registration fee?",
-    a: "Yes. The registration fee is ₹99.",
+    a: "Yes. The registration fee is ₹149 per team, paid on Unstop.",
   },
   {
     q: "Where does the heist happen?",
@@ -51,6 +66,13 @@ const FAQS = [
   {
     q: "Can beginners join?",
     a: "Yes. The event is open to everyone, whatever your college, branch or experience.",
+  },  {
+    q: "Who is running the heist?",
+    a: "DJS Code AI, the AI & ML club of DJSCE, in collaboration with Unstop. It happens at the AIML Department, DJSCE.",
+  },
+  {
+    q: "Who do I contact with questions?",
+    a: "Meet Dawda (+91 80078 52752) or Juee Shimpi (+91 89751 36588).",
   },
 ];
 
@@ -86,7 +108,7 @@ export function ProfessorsRules() {
           />
         </div>
 
-        {/* The 5 Non-Negotiable Rules - Completely Preserved */}
+        {/* The 8 Rules of Engagement (from the official guidelines) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
           {RULES.map((rule, idx) => (
             <div

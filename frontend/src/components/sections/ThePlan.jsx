@@ -13,25 +13,25 @@ export function ThePlan() {
       step: "01",
       title: "GET IN",
       action: "Get in through the front doors at 08:00.",
-      detail: "Pass security verification at the registration desk. Hardware deployed, all three crew members accounted for.",
+      detail: "Pass security verification at the registration desk. Hardware deployed, every crew member accounted for.",
     },
     {
       step: "02",
       title: "TAKE CONTROL",
       action: "Take control of the mint & solve the challenges.",
-      detail: "Infiltrate Phase 1 inside the mint. Solve rapid development problems, decrypt data streams, and rank in the top 10.",
+      detail: "Infiltrate Phase 1 inside the mint. Crack vault codes, debug security systems, uncover hidden blueprints and analyze the Mint's data.",
     },
     {
       step: "03",
       title: "PRINT THE LOOT",
       action: "Print what you came for before time expires.",
-      detail: "Execute solutions with precision. Only the top 10 crews move on to Phase 2: The Escape.",
+      detail: "Speed, accuracy and smart thinking decide how far you get. Only the top 10 crews move on to Phase 2: The Escape.",
     },
     {
       step: "04",
       title: "GET OUT",
       action: "Get out before the walls close in.",
-      detail: "Collect every hint in Phase 2. The first crew to unlock the final escape sequence claims the vault.",
+      detail: "Track the money trail, make high-stakes strategic calls and stay ahead of the authorities. Every choice affects your final extraction.",
     },
   ];
 
@@ -249,7 +249,7 @@ export function ThePlan() {
             </div>
 
             <p className="font-mono text-xs text-[#666666] tracking-[0.2em] uppercase mt-8 pt-6 border-t border-[#292929]">
-              ONLY THE FIRST CREW TO COLLECT EVERY HINT IN PHASE 2 TAKES THE VAULT.
+              POINTS FOR EVERY CHALLENGE CLEARED. THE HIGHEST SCORE TAKES THE VAULT.
             </p>
           </div>
         </div>

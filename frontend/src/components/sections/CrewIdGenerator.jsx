@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import daliMaskImg from "@/assets/images/dali_mask.jpg";
+import { UNSTOP_URL } from "@/lib/registrationStatus";
 import {
   User,
   RotateCw,
@@ -187,7 +188,7 @@ export function CrewIdGenerator() {
 
     ctx.fillStyle = "#666666";
     ctx.font = "13px monospace";
-    ctx.fillText("DJSCE - MUMBAI · 09.10.2026 · @DJSCODEAI", 80, 595);
+    ctx.fillText("DJSCE - MUMBAI · 09.10.2026 · @DJS_CODEAI", 80, 595);
 
     const link = document.createElement("a");
     link.download = `CODEVERSE-ID-${codename}.png`;
@@ -196,7 +197,7 @@ export function CrewIdGenerator() {
   };
 
   const handleShare = async () => {
-    const shareText = `Agent ${codename}, reporting for duty. Join our crew for CodeVerse 2.0, a Money Heist themed event on 9 October at DJSCE. Teams of 3. ₹99.`;
+    const shareText = `Agent ${codename}, reporting for duty. Join our crew for CodeVerse 2.0, a Money Heist themed event on 9 October at DJSCE. Crews of 2–3. ₹149 per team. Register on Unstop: ${UNSTOP_URL}`;
     const shareUrl = window.location.href;
 
     if (navigator.share) {
@@ -448,7 +449,7 @@ export function CrewIdGenerator() {
               <div className="pt-4 border-t border-[#1f1f1f] flex items-center justify-between font-mono text-[10px] text-neutral-500 tracking-widest uppercase">
                 <div>
                   <p className="text-neutral-300 font-semibold">DJSCE - MUMBAI</p>
-                  <p className="text-neutral-500 text-[9px]">09.10.2026 · @DJSCODEAI</p>
+                  <p className="text-neutral-500 text-[9px]">09.10.2026 · @DJS_CODEAI</p>
                 </div>
 
                 {/* Simulated SVG Barcode */}

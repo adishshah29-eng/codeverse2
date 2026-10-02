@@ -438,7 +438,7 @@ export function TheSchedule() {
           THE SCHEDULE
         </h2>
         <p className="font-mono text-xs sm:text-sm text-[#888888] tracking-wide">
-          Crews of 3. Be through the door on time.
+          Crews of 2–3. Be through the door on time.
         </p>
       </div>
 

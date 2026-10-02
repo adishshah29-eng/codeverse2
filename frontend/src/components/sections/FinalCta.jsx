@@ -3,6 +3,7 @@ import { MapPin, IndianRupee, Users, ArrowRight, Target } from "lucide-react";
 import VariableProximity from "@/components/ui/VariableProximity";
 import { BlurText, BlurFade } from "@/components/ui/BlurText";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
+import { UNSTOP_URL, REGISTRATION_FEE } from "@/lib/registrationStatus";
 
 export function FinalCta() {
   const ctaHeaderRef = useRef(null);
@@ -136,7 +137,7 @@ export function FinalCta() {
         {/* Main CTA Button: JOIN THE CREW */}
         <BlurFade delay={0.2} className="mb-14">
           <a
-            href="https://unstop.com"
+            href={UNSTOP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="relative inline-flex items-center justify-center gap-3 px-10 sm:px-14 py-4 sm:py-4.5 bg-[#E50914] hover:bg-[#ff1a26] text-white font-mono text-xs sm:text-sm tracking-[0.25em] uppercase font-bold transition-all duration-300 shadow-[0_0_30px_rgba(229,9,20,0.5)] hover:shadow-[0_0_50px_rgba(229,9,20,0.85)] cursor-pointer border border-red-500 group"
@@ -186,7 +187,7 @@ export function FinalCta() {
                   REGISTRATION
                 </span>
                 <span className="text-[#F59E0B] text-xs sm:text-sm font-bold tracking-wider flex items-center gap-1">
-                  <AnimatedCounter value={99} prefix="₹" />
+                  <AnimatedCounter value={REGISTRATION_FEE} prefix="₹" />
                   <span>PER CREW</span>
                 </span>
               </div>
@@ -202,9 +203,7 @@ export function FinalCta() {
                   CREW SIZE
                 </span>
                 <span className="text-white text-xs sm:text-sm font-bold tracking-wider flex items-center gap-1">
-                  <span>STRICTLY</span>
-                  <AnimatedCounter value={3} />
-                  <span>MEMBERS</span>
+                  <span>2–3 MEMBERS</span>
                 </span>
               </div>
             </div>
